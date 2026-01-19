@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as cycles from "../cycles.js";
 import type * as http from "../http.js";
 import type * as metadata from "../metadata.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  cycles: typeof cycles;
   http: typeof http;
   metadata: typeof metadata;
 }>;

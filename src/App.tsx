@@ -22,11 +22,6 @@ export type Cycle = {
   endTime: number;
 };
 
-type FrameCallbackHandle = number | null;
-type FrameCallback = (
-  time: number,
-  metadata: VideoFrameCallbackMetadata,
-) => void;
 type SourceType = "html5" | "youtube" | null;
 
 type YouTubePlayer = {
@@ -87,7 +82,7 @@ const parseYouTubeId = (input: string) => {
         return url.pathname.replace("/shorts/", "");
       }
     }
-  } catch (err) {
+  } catch {
     return null;
   }
   return null;
@@ -125,7 +120,6 @@ export default function App() {
 
   const isYouTube = sourceType === "youtube";
   const isHtml5 = sourceType === "html5";
-  const speedOptions = isYouTube ? youtubeRates : PLAYBACK_RATES;
 
   const isMarkShotKey = (event: KeyboardEvent | ReactKeyboardEvent) =>
     event.key?.toLowerCase() === "b" || event.code === "KeyB";

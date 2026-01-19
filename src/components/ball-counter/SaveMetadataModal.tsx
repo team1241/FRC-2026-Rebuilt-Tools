@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
 import { X } from "lucide-react";
 import { useMutation } from "convex/react";
@@ -49,7 +49,7 @@ export default function SaveMetadataModal({
         toast.success(
           `Successfully saved data for Team ${value.teamNumber} - ${value.eventCode} Match ${value.matchNumber}`,
         );
-      } catch (error) {
+      } catch {
         toast.error("Unable to save metadata. Try again.");
       }
     },

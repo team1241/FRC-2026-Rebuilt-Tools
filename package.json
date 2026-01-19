@@ -1,11 +1,12 @@
 {
   "name": "ball-tracking-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "convex": "convex dev",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "preview": "vite preview"

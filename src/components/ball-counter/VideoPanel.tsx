@@ -17,9 +17,6 @@ type VideoPanelProps = {
   youtubeContainerRef: RefObject<HTMLDivElement>;
 };
 
-const buttonGhost =
-  "rounded-full border border-dashed border-[var(--color-border)] bg-transparent px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-muted)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-ink)] disabled:opacity-60";
-
 export default function VideoPanel({
   isHtml5,
   isYouTube,
