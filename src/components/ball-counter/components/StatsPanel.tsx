@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import type { Cycle, ShotMark } from "../../App";
+import type { Cycle, ShotMark } from "@/components/ball-counter/types";
 import ShotTimeline from "./ShotTimeline";
-import { formatTime } from "../../App";
+import { formatTime } from "@/lib/time";
 import SaveMetadataModal from "./SaveMetadataModal";
 
 type StatsPanelProps = {
@@ -55,15 +55,15 @@ export default function StatsPanel({
   }, [cycleToDelete, isClearConfirmOpen]);
 
   return (
-    <section className="flex flex-col gap-6 rounded-[28px] border border-[var(--color-border)] bg-[color:rgb(var(--color-surface-rgb)/0.9)] p-6">
+    <section className="flex flex-col gap-6 rounded-[28px] border border-border bg-surface/90 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold text-[var(--color-ink)]">Stats</h2>
+        <h2 className="text-xl font-semibold text-ink">Stats</h2>
         <div className="flex flex-wrap items-center gap-2">
           {videoUrl && (
             <button
               type="button"
               onClick={() => setIsSaveOpen(true)}
-              className="rounded-full border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-surface)] transition hover:border-[var(--color-accent-strong) hover:-translate-y-0.5 hover:bg-[var(--color-accent-strong)]"
+              className="rounded-full border border-accent bg-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface transition hover:-translate-y-0.5 hover:border-accent-strong hover:bg-accent-strong"
             >
               Save data
             </button>
@@ -74,7 +74,7 @@ export default function StatsPanel({
               setCycleToDelete(null);
               setIsClearConfirmOpen(true);
             }}
-            className="rounded-full border border-[var(--color-danger)] bg-[var(--color-danger)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-surface)] transition hover:-translate-y-0.5 hover:border-[var(--color-danger-strong)] hover:bg-[var(--color-danger-strong)]"
+            className="rounded-full border border-danger bg-danger px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface transition hover:-translate-y-0.5 hover:border-danger-strong hover:bg-danger-strong"
           >
             Clear all marks
           </button>
@@ -89,13 +89,13 @@ export default function StatsPanel({
         />
       </div>
 
-      <div className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] p-4">
+      <div className="rounded-2xl border border-border-subtle bg-surface-muted p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-[var(--color-ink)]">
+            <h3 className="text-base font-semibold text-ink">
               Cycle counter
             </h3>
-            <p className="text-sm text-[var(--color-ink-muted)]">
+            <p className="text-sm text-ink-muted">
               Group shots into cycles to measure pace.
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function StatsPanel({
               type="button"
               onClick={onStartCycle}
               disabled={activeCycleStart !== null}
-              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-60"
             >
               Start cycle (Q)
             </button>
@@ -112,19 +112,19 @@ export default function StatsPanel({
               type="button"
               onClick={onEndCycle}
               disabled={activeCycleStart === null}
-              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-60"
             >
               End cycle (E)
             </button>
           </div>
         </div>
         {activeCycleStart === null ? (
-          <p className="mt-3 text-sm text-[var(--color-ink-muted)]">
+          <p className="mt-3 text-sm text-ink-muted">
             No active cycle.
           </p>
         ) : (
-          <div className="mt-3 flex flex-col gap-1 rounded-2xl border border-[color:var(--color-success-border)] bg-gradient-to-r from-[var(--color-success-soft)] to-[var(--color-success-mist)] px-4 py-3 text-sm">
-            <span className="rounded-full py-1 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)]">
+          <div className="mt-3 flex flex-col gap-1 rounded-2xl border border-success-border bg-gradient-to-r from-success-soft to-success-mist px-4 py-3 text-sm">
+            <span className="rounded-full py-1 text-sm font-semibold uppercase tracking-[0.2em] text-ink">
               Active cycle
             </span>
             <div className="flex justify-between items-center font-semibold">
@@ -146,25 +146,25 @@ export default function StatsPanel({
               return (
                 <li
                   key={cycle.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-4 py-3 text-sm"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border-subtle bg-surface px-4 py-3 text-sm"
                 >
                   <div className="space-y-1">
-                    <p className="font-medium text-[var(--color-ink)]">
+                    <p className="font-medium text-ink">
                       Cycle {index + 1} · {formatTime(cycle.startTime)}–
                       {formatTime(cycle.endTime)}
                     </p>
-                    <p className="text-xs text-[var(--color-ink-muted)]">
+                    <p className="text-xs text-ink-muted">
                       Duration {formatTime(duration)} · {markCount} marks
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)]">
+                    <span className="rounded-full border border-border bg-surface-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-ink">
                       {bps.toFixed(2)} bps
                     </span>
                     <button
                       type="button"
                       onClick={() => setCycleToDelete(cycle)}
-                      className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
+                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
                     >
                       Delete
                     </button>
@@ -174,7 +174,7 @@ export default function StatsPanel({
             })}
           </ul>
         ) : (
-          <p className="mt-3 text-sm text-[var(--color-ink-muted)]">
+          <p className="mt-3 text-sm text-ink-muted">
             Start a cycle to capture balls-per-second groups.
           </p>
         )}
@@ -183,28 +183,28 @@ export default function StatsPanel({
       <ShotTimeline marks={marks} cycles={cycles} onRemoveMark={onRemoveMark} />
       {isClearConfirmOpen ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
-              <h4 className="text-lg font-semibold text-[var(--color-ink)]">
+              <h4 className="text-lg font-semibold text-ink">
                 Clear all marks?
               </h4>
               <button
                 type="button"
                 onClick={() => setIsClearConfirmOpen(false)}
-                className="rounded-full border border-transparent p-2 text-[var(--color-ink-muted)] transition hover:border-[var(--color-border)] hover:text-[var(--color-ink)]"
+                className="rounded-full border border-transparent p-2 text-ink-muted transition hover:border-border hover:text-ink"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+            <p className="mt-2 text-sm text-ink-muted">
               This removes all shot marks and clears the timeline.
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setIsClearConfirmOpen(false)}
-                className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
+                className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
               >
                 Cancel
               </button>
@@ -214,7 +214,7 @@ export default function StatsPanel({
                   onClearMarks();
                   setIsClearConfirmOpen(false);
                 }}
-                className="rounded-full bg-[var(--color-danger)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-surface)] shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--color-danger-strong)] hover:shadow-md"
+                className="rounded-full bg-danger px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:bg-danger-strong hover:shadow-md"
               >
                 Clear marks
               </button>
@@ -224,21 +224,21 @@ export default function StatsPanel({
       ) : null}
       {cycleToDelete ? (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
-              <h4 className="text-lg font-semibold text-[var(--color-ink)]">
+              <h4 className="text-lg font-semibold text-ink">
                 Delete cycle?
               </h4>
               <button
                 type="button"
                 onClick={() => setCycleToDelete(null)}
-                className="rounded-full border border-transparent p-2 text-[var(--color-ink-muted)] transition hover:border-[var(--color-border)] hover:text-[var(--color-ink)]"
+                className="rounded-full border border-transparent p-2 text-ink-muted transition hover:border-border hover:text-ink"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
-            <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
+            <p className="mt-2 text-sm text-ink-muted">
               This removes the cycle and any balls marked within{" "}
               {formatTime(cycleToDelete.startTime)}–
               {formatTime(cycleToDelete.endTime)} (
@@ -252,7 +252,7 @@ export default function StatsPanel({
               <button
                 type="button"
                 onClick={() => setCycleToDelete(null)}
-                className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
+                className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
               >
                 Cancel
               </button>
@@ -262,7 +262,7 @@ export default function StatsPanel({
                   onRemoveCycle(cycleToDelete.id);
                   setCycleToDelete(null);
                 }}
-                className="rounded-full bg-gradient-to-br from-[var(--color-accent-strong)] to-[var(--color-accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-surface)] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-full bg-gradient-to-br from-accent-strong to-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 Delete cycle
               </button>
@@ -286,11 +286,11 @@ type StatCardProps = {
 
 function StatCard({ label, value }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)] p-4 flex flex-col justify-between gap-1">
-      <span className="text-xs uppercase tracking-[0.2em] text-[var(--color-ink-muted)]">
+    <div className="rounded-2xl border border-border-subtle bg-surface-muted p-4 flex flex-col justify-between gap-1">
+      <span className="text-xs uppercase tracking-[0.2em] text-ink-muted">
         {label}
       </span>
-      <p className="text-2xl font-semibold text-[var(--color-ink)]">{value}</p>
+      <p className="text-2xl font-semibold text-ink">{value}</p>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   useCallback,
   useEffect,
@@ -6,21 +8,12 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import Hero from "./components/Hero";
-import StatsPanel from "./components/ball-counter/StatsPanel";
-import VideoPanel from "./components/ball-counter/VideoPanel";
-import { PLAYBACK_RATES, DEFAULT_FPS } from "./constants";
-
-export type ShotMark = {
-  id: string;
-  time: number;
-};
-
-export type Cycle = {
-  id: string;
-  startTime: number;
-  endTime: number;
-};
+import Hero from "@/components/Hero";
+import StatsPanel from "@/components/ball-counter/components/StatsPanel";
+import VideoPanel from "@/components/ball-counter/components/VideoPanel";
+import { DEFAULT_FPS } from "@/constants";
+import type { Cycle, ShotMark } from "@/components/ball-counter/types";
+import { parseYouTubeId } from "@/lib/youtube";
 
 type SourceType = "html5" | "youtube" | null;
 
@@ -29,8 +22,6 @@ type YouTubePlayer = {
   loadVideoById: (videoId: string) => void;
   getCurrentTime: () => number;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
-  getAvailablePlaybackRates: () => number[];
-  setPlaybackRate: (rate: number) => void;
 };
 
 type YouTubePlayerConstructor = new (
@@ -53,42 +44,7 @@ declare global {
   }
 }
 
-export const formatTime = (seconds: number) => {
-  if (!Number.isFinite(seconds)) return "--:--.--";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  const millis = Math.floor((seconds % 1) * 100);
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(
-    2,
-    "0",
-  )}.${String(millis).padStart(2, "0")}`;
-};
-
-const parseYouTubeId = (input: string) => {
-  try {
-    const url = new URL(input);
-    const host = url.hostname.replace("www.", "");
-    if (host === "youtu.be") {
-      return url.pathname.slice(1) || null;
-    }
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (url.pathname === "/watch") {
-        return url.searchParams.get("v");
-      }
-      if (url.pathname.startsWith("/embed/")) {
-        return url.pathname.replace("/embed/", "");
-      }
-      if (url.pathname.startsWith("/shorts/")) {
-        return url.pathname.replace("/shorts/", "");
-      }
-    }
-  } catch {
-    return null;
-  }
-  return null;
-};
-
-export default function App() {
+export default function BallCounterApp() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const youtubeContainerRef = useRef<HTMLDivElement | null>(null);
   const youtubePlayerRef = useRef<YouTubePlayer | null>(null);
@@ -101,8 +57,6 @@ export default function App() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [activeCycleStart, setActiveCycleStart] = useState<number | null>(null);
   const [error, setError] = useState("");
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [youtubeRates, setYouTubeRates] = useState<number[]>(PLAYBACK_RATES);
 
   const averageBps = useMemo(() => {
     if (!cycles.length) return 0;
@@ -156,11 +110,6 @@ export default function App() {
         events: {
           onReady: () => {
             if (cancelled || !youtubePlayerRef.current) return;
-            const rates = youtubePlayerRef.current.getAvailablePlaybackRates();
-            if (rates?.length) {
-              setYouTubeRates(rates);
-            }
-            youtubePlayerRef.current.setPlaybackRate(playbackRate);
           },
         },
       });
@@ -196,7 +145,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [isYouTube, youtubeId, playbackRate]);
+  }, [isYouTube, youtubeId]);
 
   useEffect(() => {
     if (isYouTube) return;
@@ -205,25 +154,6 @@ export default function App() {
       youtubePlayerRef.current = null;
     }
   }, [isYouTube]);
-
-  useEffect(() => {
-    if (isHtml5 && videoRef.current) {
-      videoRef.current.playbackRate = playbackRate;
-    }
-  }, [isHtml5, playbackRate, loadedUrl]);
-
-  useEffect(() => {
-    if (isYouTube && youtubePlayerRef.current) {
-      youtubePlayerRef.current.setPlaybackRate(playbackRate);
-    }
-  }, [isYouTube, playbackRate]);
-
-  useEffect(() => {
-    if (!isYouTube) return;
-    if (youtubeRates.length && !youtubeRates.includes(playbackRate)) {
-      setPlaybackRate(youtubeRates[0]);
-    }
-  }, [isYouTube, youtubeRates, playbackRate]);
 
   const handleLoad = () => {
     const trimmed = videoUrl.trim();
@@ -237,7 +167,6 @@ export default function App() {
       setSourceType("youtube");
       setYouTubeId(youTubeId);
       setLoadedUrl("");
-      setPlaybackRate(1);
       setMarks([]);
       setCycles([]);
       setActiveCycleStart(null);
@@ -366,48 +295,34 @@ export default function App() {
         jumpSeconds(-5);
         return;
       }
-      if (event.key === ",") {
-        event.preventDefault();
-        stepFrame(-1);
-        return;
-      }
       if (event.key === ".") {
         event.preventDefault();
         stepFrame(1);
+        return;
+      }
+      if (event.key === ",") {
+        event.preventDefault();
+        stepFrame(-1);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown, true);
-    return () => window.removeEventListener("keydown", handleKeyDown, true);
-  }, [
-    endCycle,
-    isHtml5,
-    isYouTube,
-    jumpSeconds,
-    markShot,
-    startCycle,
-    stepFrame,
-    undoLastMark,
-  ]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [endCycle, isHtml5, isYouTube, markShot, startCycle]);
 
   const handleVideoKeyDown = (event: ReactKeyboardEvent<HTMLVideoElement>) => {
-    if (event.key?.toLowerCase() === "u" || event.code === "KeyU") {
-      undoLastMark();
-      return;
-    }
-    if (event.key?.toLowerCase() === "q" || event.code === "KeyQ") {
-      startCycle();
-      return;
-    }
-    if (event.key?.toLowerCase() === "e" || event.code === "KeyE") {
-      endCycle();
-      return;
-    }
-    if (isMarkShotKey(event)) {
-      markShot();
-      return;
-    }
     if (!isHtml5) return;
+    if (event.key === " ") {
+      event.preventDefault();
+      const video = videoRef.current;
+      if (!video) return;
+      if (video.paused) {
+        void video.play();
+      } else {
+        video.pause();
+      }
+      return;
+    }
     if (event.key === "ArrowRight") {
       event.preventDefault();
       jumpSeconds(5);
@@ -418,15 +333,46 @@ export default function App() {
       jumpSeconds(-5);
       return;
     }
+    if (event.key === ".") {
+      event.preventDefault();
+      stepFrame(1);
+      return;
+    }
     if (event.key === ",") {
       event.preventDefault();
       stepFrame(-1);
       return;
     }
-    if (event.key === ".") {
+    if (event.key?.toLowerCase() === "u" || event.code === "KeyU") {
       event.preventDefault();
-      stepFrame(1);
+      undoLastMark();
+      return;
     }
+    if (event.key?.toLowerCase() === "q" || event.code === "KeyQ") {
+      event.preventDefault();
+      startCycle();
+      return;
+    }
+    if (event.key?.toLowerCase() === "e" || event.code === "KeyE") {
+      event.preventDefault();
+      endCycle();
+      return;
+    }
+    if (isMarkShotKey(event)) {
+      event.preventDefault();
+      markShot();
+    }
+  };
+
+  const handleVideoUrlChange = (value: string) => {
+    setVideoUrl(value);
+    setError("");
+  };
+
+  const handleClearMarks = () => {
+    setMarks([]);
+    setCycles([]);
+    setActiveCycleStart(null);
   };
 
   const removeMark = (id: string) => {
@@ -435,35 +381,28 @@ export default function App() {
 
   const removeCycle = (id: string) => {
     setCycles((prev) => {
-      const target = prev.find((cycle) => cycle.id === id);
-      if (target) {
-        setMarks((prevMarks) =>
-          prevMarks.filter(
-            (mark) =>
-              mark.time < target.startTime || mark.time > target.endTime,
-          ),
-        );
-      }
-      return prev.filter((cycle) => cycle.id !== id);
+      const cycleIndex = prev.findIndex((cycle) => cycle.id === id);
+      if (cycleIndex === -1) return prev;
+      const cycle = prev[cycleIndex];
+      setMarks((marksPrev) =>
+        marksPrev.filter(
+          (mark) => mark.time < cycle.startTime || mark.time > cycle.endTime,
+        ),
+      );
+      return prev.filter((cycleItem) => cycleItem.id !== id);
     });
   };
 
-  const clearMarks = () => {
-    setMarks([]);
-    setCycles([]);
-    setActiveCycleStart(null);
-  };
-
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-12">
+    <div className="min-h-screen px-4 pb-12 pt-10 sm:px-6 lg:px-10">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <Hero />
-        <main className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <VideoPanel
             isHtml5={isHtml5}
             isYouTube={isYouTube}
             videoUrl={videoUrl}
-            onVideoUrlChange={setVideoUrl}
+            onVideoUrlChange={handleVideoUrlChange}
             onLoad={handleLoad}
             error={error}
             loadedUrl={loadedUrl}
@@ -477,13 +416,13 @@ export default function App() {
             cycles={cycles}
             activeCycleStart={activeCycleStart}
             videoUrl={videoUrl}
-            onClearMarks={clearMarks}
+            onClearMarks={handleClearMarks}
             onRemoveMark={removeMark}
             onStartCycle={startCycle}
             onEndCycle={endCycle}
             onRemoveCycle={removeCycle}
           />
-        </main>
+        </div>
       </div>
     </div>
   );

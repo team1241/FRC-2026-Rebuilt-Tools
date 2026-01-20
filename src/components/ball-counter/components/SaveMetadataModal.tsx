@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
 import { X } from "lucide-react";
 import { useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "@/convex/_generated/api";
 import {
   MetadataFormValues,
   metadataSchema,
-} from "./schemas/create-metadata.schema";
+} from "../schemas/create-metadata.schema";
 import { toast } from "sonner";
 
 type SaveMetadataModalProps = {
@@ -16,7 +16,7 @@ type SaveMetadataModalProps = {
 };
 
 const inputClassName =
-  "mt-2 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 py-3 text-sm text-[var(--color-ink)] focus:border-[var(--color-accent)] focus:outline-none";
+  "mt-2 w-full rounded-2xl border border-border bg-surface-soft px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none";
 
 export default function SaveMetadataModal({
   isOpen,
@@ -85,20 +85,20 @@ export default function SaveMetadataModal({
         }
       }}
     >
-      <div className="w-full max-w-lg rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h4 className="text-lg font-semibold text-[var(--color-ink)]">
+            <h4 className="text-lg font-semibold text-ink">
               Save match metadata
             </h4>
-            <p className="mt-1 text-sm text-[var(--color-ink-muted)]">
+            <p className="mt-1 text-sm text-ink-muted">
               Capture event, match, and team details alongside this clip.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-transparent p-2 text-[var(--color-ink-muted)] transition hover:border-[var(--color-border)] hover:text-[var(--color-ink)]"
+            className="rounded-full border border-transparent p-2 text-ink-muted transition hover:border-border hover:text-ink"
             aria-label="Close"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -119,7 +119,7 @@ export default function SaveMetadataModal({
                 ? field.state.meta.errors?.[0]
                 : undefined;
               return (
-                <label className="block text-sm font-semibold text-[var(--color-ink)]">
+                <label className="block text-sm font-semibold text-ink">
                   Event code
                   <input
                     type="text"
@@ -130,7 +130,7 @@ export default function SaveMetadataModal({
                     className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-[var(--color-danger)]">
+                    <span className="mt-2 block text-xs text-danger">
                       {fieldError}
                     </span>
                   ) : null}
@@ -145,7 +145,7 @@ export default function SaveMetadataModal({
                 ? field.state.meta.errors?.[0]
                 : undefined;
               return (
-                <label className="block text-sm font-semibold text-[var(--color-ink)]">
+                <label className="block text-sm font-semibold text-ink">
                   Match number
                   <input
                     type="text"
@@ -156,7 +156,7 @@ export default function SaveMetadataModal({
                     className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-[var(--color-danger)]">
+                    <span className="mt-2 block text-xs text-danger">
                       {fieldError}
                     </span>
                   ) : null}
@@ -171,7 +171,7 @@ export default function SaveMetadataModal({
                 ? field.state.meta.errors?.[0]
                 : undefined;
               return (
-                <label className="block text-sm font-semibold text-[var(--color-ink)]">
+                <label className="block text-sm font-semibold text-ink">
                   Team number
                   <input
                     type="number"
@@ -183,7 +183,7 @@ export default function SaveMetadataModal({
                     className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-[var(--color-danger)]">
+                    <span className="mt-2 block text-xs text-danger">
                       {fieldError}
                     </span>
                   ) : null}
@@ -196,14 +196,14 @@ export default function SaveMetadataModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-ink)] transition hover:border-[var(--color-accent)]"
+              className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-full bg-gradient-to-br from-[var(--color-accent-strong)] to-[var(--color-accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-surface)] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
+              className="rounded-full bg-linear-to-br from-accent-strong to-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? "Saving..." : "Save data"}
             </button>
