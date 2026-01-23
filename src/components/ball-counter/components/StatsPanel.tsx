@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type {
-  Cycle,
+  CycleUi,
   ShotMark,
   ShotType,
 } from "@/components/ball-counter/types";
@@ -12,7 +12,7 @@ import SaveMetadataModal from "./SaveMetadataModal";
 type StatsPanelProps = {
   marks: ShotMark[];
   averageBps: number;
-  cycles: Cycle[];
+  cycles: CycleUi[];
   activeCycleStart: number | null;
   videoUrl: string;
   shotType: ShotType;
@@ -39,7 +39,7 @@ export default function StatsPanel({
   onRemoveCycle,
 }: StatsPanelProps) {
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
-  const [cycleToDelete, setCycleToDelete] = useState<Cycle | null>(null);
+  const [cycleToDelete, setCycleToDelete] = useState<CycleUi | null>(null);
   const [isSaveOpen, setIsSaveOpen] = useState(false);
 
   const activeCycleMarks =
@@ -185,10 +185,10 @@ export default function StatsPanel({
           <ul className="mt-4 space-y-2">
             {cycles.map((cycle, index) => {
               const markCount = countMarksInRange(
-                cycle.startTime,
-                cycle.endTime,
+                cycle.startTimestamp,
+                cycle.endTimestamp,
               );
-              const duration = cycle.endTime - cycle.startTime;
+              const duration = cycle.endTimestamp - cycle.startTimestamp;
               const bps = duration > 0 ? markCount / duration : 0;
 
               return (
@@ -198,8 +198,8 @@ export default function StatsPanel({
                 >
                   <div className="space-y-1">
                     <p className="font-medium text-ink">
-                      Cycle {index + 1} · {formatTime(cycle.startTime)}–
-                      {formatTime(cycle.endTime)}
+                      Cycle {index + 1} · {formatTime(cycle.startTimestamp)}–
+                      {formatTime(cycle.endTimestamp)}
                     </p>
                     <p className="text-xs text-ink-muted">
                       Duration {formatTime(duration)} · {markCount} marks
@@ -295,11 +295,11 @@ export default function StatsPanel({
             </div>
             <p className="mt-2 text-sm text-ink-muted">
               This removes the cycle and any balls marked within{" "}
-              {formatTime(cycleToDelete.startTime)}–
-              {formatTime(cycleToDelete.endTime)} (
+              {formatTime(cycleToDelete.startTimestamp)}–
+              {formatTime(cycleToDelete.endTimestamp)} (
               {countMarksInRange(
-                cycleToDelete.startTime,
-                cycleToDelete.endTime,
+                cycleToDelete.startTimestamp,
+                cycleToDelete.endTimestamp,
               )}{" "}
               marks).
             </p>

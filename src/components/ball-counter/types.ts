@@ -7,9 +7,18 @@ export type ShotMark = {
 export type ShotType = "shooting" | "feeding";
 
 export type Cycle = {
+  cycleNumber: number;
+  startTimestamp: string;
+  endTimestamp: string;
+  numberOfBalls: number;
+  cycleType: ShotType;
+};
+
+export type CycleUi = {
   id: string;
-  startTime: number;
-  endTime: number;
+  startTimestamp: number;
+  endTimestamp: number;
+  numberOfBalls: number;
   shotType: ShotType;
   tagColor: string;
 };

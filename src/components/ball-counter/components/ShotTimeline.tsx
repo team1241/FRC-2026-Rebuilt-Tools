@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import type { Cycle, ShotMark } from "@/components/ball-counter/types";
+import type { CycleUi, ShotMark } from "@/components/ball-counter/types";
 import { formatTime } from "@/lib/time";
 
 type ShotTimelineProps = {
   marks: ShotMark[];
-  cycles: Cycle[];
+  cycles: CycleUi[];
   onRemoveMark: (id: string) => void;
 };
 
@@ -23,7 +23,7 @@ export default function ShotTimeline({
 
   const getCycleInfo = (time: number) => {
     const index = cycles.findIndex(
-      (cycle) => time >= cycle.startTime && time <= cycle.endTime,
+      (cycle) => time >= cycle.startTimestamp && time <= cycle.endTimestamp,
     );
     if (index === -1) return null;
     return { index: index + 1, cycle: cycles[index] };

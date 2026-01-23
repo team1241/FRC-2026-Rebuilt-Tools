@@ -10,10 +10,19 @@ import useShotTracking from "@/components/ball-counter/hooks/useShotTracking";
 import useVideoKeyHandler from "@/components/ball-counter/hooks/useVideoKeyHandler";
 import useVideoSource from "@/components/ball-counter/hooks/useVideoSource";
 import useYouTubePlayer from "@/components/ball-counter/hooks/useYouTubePlayer";
+import { CycleTrackingProvider } from "@/components/ball-counter/hooks/useCycleTracking";
 import { calculateAverageBps } from "@/components/ball-counter/utils/cycleStats";
 import { pickCycleTagColor } from "@/components/ball-counter/utils/cycleTags";
 
 export default function BallCounterApp() {
+  return (
+    <CycleTrackingProvider>
+      <BallCounterContent />
+    </CycleTrackingProvider>
+  );
+}
+
+function BallCounterContent() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const {

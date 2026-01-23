@@ -1,6 +1,9 @@
-import { formatISO } from "date-fns";
-import { mutation } from "./_generated/server";
+import { mutation, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import { getFormattedTimestamp } from "./utils";
+import { Doc } from "./_generated/dataModel";
+
+export type CreateCyclePayload = Pick<Doc<'cycles'>, 'metadataId' | 'cycleNumber' | 'startTimestamp' | 'endTimestamp' | 'numberOfBalls' | 'cycleType'>
 
 export const createCycles = mutation({
   args: {
@@ -17,11 +20,16 @@ export const createCycles = mutation({
   },
   handler: async (ctx, args) => {
     const { cycles } = args;
-    const timestamp = formatISO(new Date());
+    const timestamp = getFormattedTimestamp();
 
     // Inserting in a loop works for convex since it queues all db insertions
     for (const cycle of cycles) {
-      await ctx.db.insert('cycles', { ...cycle, createdAt: timestamp, updatedAt: timestamp })
+      createCycle(ctx, cycle, timestamp)
     }
   }
 })
+
+export const createCycle = async (ctx: MutationCtx, cycle: CreateCyclePayload, timestamp?: string) => {
+  const _timestamp = timestamp ?? getFormattedTimestamp()
+  await ctx.db.insert('cycles', { ...cycle, createdAt: _timestamp, updatedAt: _timestamp })
+}

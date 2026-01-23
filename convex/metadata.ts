@@ -1,7 +1,15 @@
 import { v } from "convex/values"
-import { httpAction, mutation, query } from "./_generated/server"
+import { httpAction, mutation, MutationCtx, query } from "./_generated/server"
 import { api } from "./_generated/api"
-import { formatISO } from "date-fns";
+import { getFormattedTimestamp } from "./utils";
+import { Doc } from "./_generated/dataModel";
+
+export type CreateMetadataPayload = Pick<Doc<"metadata">, "eventCode" | "matchNumber" | "teamNumber" | "videoUrl" | "userId">
+
+export const writeMetadata = async (ctx: MutationCtx, metadata: CreateMetadataPayload, timestamp?: string) => {
+  const _timestamp = timestamp ?? getFormattedTimestamp()
+  return await ctx.db.insert('metadata', { ...metadata, createdAt: _timestamp, updatedAt: _timestamp })
+}
 
 export const createMetadata = mutation({
   args: {
@@ -12,7 +20,7 @@ export const createMetadata = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    const timestamp = formatISO(new Date());
+    const timestamp = getFormattedTimestamp();
     const metadata = await ctx.db.insert("metadata", {
       ...args,
       createdAt: timestamp,

@@ -38,6 +38,7 @@ export default function useYouTubePlayer({
 }: UseYouTubePlayerOptions) {
   const youtubeContainerRef = useRef<HTMLDivElement | null>(null);
   const youtubePlayerRef = useRef<YouTubePlayer | null>(null);
+  const lastYoutubeIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isYouTube || !youtubeId) return;
@@ -47,6 +48,15 @@ export default function useYouTubePlayer({
       if (!youtubeContainerRef.current) return;
       const Player = window.YT?.Player;
       if (!Player) return;
+      if (
+        youtubePlayerRef.current &&
+        lastYoutubeIdRef.current &&
+        lastYoutubeIdRef.current !== youtubeId
+      ) {
+        youtubePlayerRef.current.destroy();
+        youtubePlayerRef.current = null;
+      }
+      lastYoutubeIdRef.current = youtubeId;
       if (youtubePlayerRef.current) {
         youtubePlayerRef.current.loadVideoById(youtubeId);
         return;
@@ -104,6 +114,7 @@ export default function useYouTubePlayer({
       youtubePlayerRef.current.destroy();
       youtubePlayerRef.current = null;
     }
+    lastYoutubeIdRef.current = null;
   }, [isYouTube]);
 
   return { youtubeContainerRef, youtubePlayerRef };

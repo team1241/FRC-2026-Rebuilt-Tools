@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type {
-  Cycle,
   ShotMark,
   ShotType,
 } from "@/components/ball-counter/types";
+import useCycleTracking from "@/components/ball-counter/hooks/useCycleTracking";
 
 type UseShotTrackingOptions = {
   getCurrentTime: () => number | null;
@@ -15,25 +15,56 @@ export default function useShotTracking({
   pickCycleTagColor,
 }: UseShotTrackingOptions) {
   const [marks, setMarks] = useState<ShotMark[]>([]);
-  const [cycles, setCycles] = useState<Cycle[]>([]);
-  const [activeCycleStart, setActiveCycleStart] = useState<number | null>(null);
+  const { cycles, setCycles, activeCycleStart, setActiveCycleStart } =
+    useCycleTracking();
   const [shotType, setShotType] = useState<ShotType>("shooting");
 
   const markShot = () => {
     const time = getCurrentTime();
     if (time === null) return;
-    setMarks((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        time,
-        shotType,
-      },
-    ]);
+    setMarks((prev) => {
+      setCycles((cyclesPrev) =>
+        cyclesPrev.map((cycle) => {
+          if (time >= cycle.startTimestamp && time <= cycle.endTimestamp) {
+            return {
+              ...cycle,
+              numberOfBalls: cycle.numberOfBalls + 1,
+            };
+          }
+          return cycle;
+        }),
+      );
+      return [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          time,
+          shotType,
+        },
+      ];
+    });
   };
 
   const undoLastMark = () => {
-    setMarks((prev) => prev.slice(0, -1));
+    setMarks((prev) => {
+      const lastMark = prev[prev.length - 1];
+      if (!lastMark) return prev;
+      setCycles((cyclesPrev) =>
+        cyclesPrev.map((cycle) => {
+          if (
+            lastMark.time >= cycle.startTimestamp &&
+            lastMark.time <= cycle.endTimestamp
+          ) {
+            return {
+              ...cycle,
+              numberOfBalls: Math.max(0, cycle.numberOfBalls - 1),
+            };
+          }
+          return cycle;
+        }),
+      );
+      return prev.slice(0, -1);
+    });
   };
 
   const startCycle = () => {
@@ -48,14 +79,18 @@ export default function useShotTracking({
     const now = getCurrentTime();
     if (now === null) return;
     const endTime = Math.max(now, activeCycleStart);
+    const numberOfBalls = marks.filter(
+      (mark) => mark.time >= activeCycleStart && mark.time <= endTime,
+    ).length;
     setCycles((prev) => {
       const tagColor = pickCycleTagColor(prev.map((cycle) => cycle.tagColor));
       return [
         ...prev,
         {
           id: crypto.randomUUID(),
-          startTime: activeCycleStart,
-          endTime,
+          startTimestamp: activeCycleStart,
+          endTimestamp: endTime,
+          numberOfBalls,
           shotType,
           tagColor,
         },
@@ -71,7 +106,25 @@ export default function useShotTracking({
   };
 
   const removeMark = (id: string) => {
-    setMarks((prev) => prev.filter((mark) => mark.id !== id));
+    setMarks((prev) => {
+      const markToRemove = prev.find((mark) => mark.id === id);
+      if (!markToRemove) return prev;
+      setCycles((cyclesPrev) =>
+        cyclesPrev.map((cycle) => {
+          if (
+            markToRemove.time >= cycle.startTimestamp &&
+            markToRemove.time <= cycle.endTimestamp
+          ) {
+            return {
+              ...cycle,
+              numberOfBalls: Math.max(0, cycle.numberOfBalls - 1),
+            };
+          }
+          return cycle;
+        }),
+      );
+      return prev.filter((mark) => mark.id !== id);
+    });
   };
 
   const removeCycle = (id: string) => {
@@ -81,7 +134,8 @@ export default function useShotTracking({
       const cycle = prev[cycleIndex];
       setMarks((marksPrev) =>
         marksPrev.filter(
-          (mark) => mark.time < cycle.startTime || mark.time > cycle.endTime,
+          (mark) =>
+            mark.time < cycle.startTimestamp || mark.time > cycle.endTimestamp,
         ),
       );
       return prev.filter((cycleItem) => cycleItem.id !== id);

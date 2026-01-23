@@ -1,13 +1,17 @@
-import { useEffect } from "react";
-import { useForm } from "@tanstack/react-form";
-import { X } from "lucide-react";
-import { useMutation } from "convex/react";
+"use client";
+
 import { api } from "@/convex/_generated/api";
+import { useForm } from "@tanstack/react-form";
+import { useMutation } from "convex/react";
+import { X } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import {
   MetadataFormValues,
   metadataSchema,
 } from "../schemas/create-metadata.schema";
-import { toast } from "sonner";
+import useCycleTracking from "@/components/ball-counter/hooks/useCycleTracking";
+import type { Cycle } from "@/components/ball-counter/types";
 
 type SaveMetadataModalProps = {
   isOpen: boolean;
@@ -23,7 +27,9 @@ export default function SaveMetadataModal({
   onClose,
   videoUrl,
 }: SaveMetadataModalProps) {
-  const createMetadata = useMutation(api.metadata.createMetadata);
+  const saveBallCountingData = useMutation(api.ballCounter.saveData);
+
+  const { cycles } = useCycleTracking();
 
   const form = useForm<MetadataFormValues>({
     defaultValues: {
@@ -37,12 +43,22 @@ export default function SaveMetadataModal({
     onSubmit: async ({ value }) => {
       const trimmedUrl = videoUrl.trim();
       try {
-        await createMetadata({
-          eventCode: value.eventCode,
-          matchNumber: value.matchNumber,
-          teamNumber: Number(value.teamNumber),
-          videoUrl: trimmedUrl,
-          userId: "local",
+        const cyclePayload: Cycle[] = cycles.map((cycle, index) => ({
+          cycleNumber: index + 1,
+          startTimestamp: cycle.startTimestamp.toString(),
+          endTimestamp: cycle.endTimestamp.toString(),
+          numberOfBalls: cycle.numberOfBalls,
+          cycleType: cycle.shotType,
+        }));
+        await saveBallCountingData({
+          metadata: {
+            eventCode: value.eventCode,
+            matchNumber: value.matchNumber,
+            teamNumber: Number(value.teamNumber),
+            videoUrl: trimmedUrl,
+            userId: "local",
+          },
+          cycles: cyclePayload,
         });
         form.reset();
         onClose();

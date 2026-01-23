@@ -8,9 +8,11 @@
  * @module
  */
 
+import type * as ballCounter from "../ballCounter.js";
 import type * as cycles from "../cycles.js";
 import type * as http from "../http.js";
 import type * as metadata from "../metadata.js";
+import type * as utils from "../utils.js";
 
 import type {
   ApiFromModules,
@@ -19,9 +21,11 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  ballCounter: typeof ballCounter;
   cycles: typeof cycles;
   http: typeof http;
   metadata: typeof metadata;
+  utils: typeof utils;
 }>;
 
 /**

@@ -9,6 +9,13 @@ export default function TopNavBar() {
       <div className="mx-auto flex h-16 items-center justify-between max-w-7xl">
         <div className="flex flex-row gap-2 items-center">
           <Image
+            src="/theory-round.avif"
+            alt="Theory6 Logo"
+            width={50}
+            height={50}
+            className="rounded-lg"
+          />
+          <Image
             src="/rebuilt-logo.svg"
             alt="Rebuilt Logo"
             width={100}
