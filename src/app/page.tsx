@@ -1,5 +1,7 @@
-import BallCounterApp from "@/components/ball-counter/BallCounter";
+import { redirect } from "next/navigation";
+
+const BALL_COUNTER_HREF = "/ball-counter" as const;
 
 export default function HomePage() {
-  return <BallCounterApp />;
+  redirect(BALL_COUNTER_HREF as Parameters<typeof redirect>[0]);
 }

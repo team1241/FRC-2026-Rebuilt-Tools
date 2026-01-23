@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import Hero from "@/components/Hero";
+import Hero from "@/components/common/Hero";
 import StatsPanel from "@/components/ball-counter/components/StatsPanel";
 import VideoPanel from "@/components/ball-counter/components/VideoPanel";
 import useGlobalShortcuts from "@/components/ball-counter/hooks/useGlobalShortcuts";
@@ -102,7 +102,7 @@ export default function BallCounterApp() {
 
   return (
     <div className="min-h-screen pb-12 pt-10">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+      <div className="flex w-full flex-col gap-4">
         <Hero />
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <VideoPanel

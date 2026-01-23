@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Providers from "../components/providers";
+import TopNavBar from "@/components/common/Header";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -12,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["500"],
+  weight: ["400", "500"],
   variable: "--font-ibm-plex-mono",
   display: "swap",
 });
@@ -28,9 +29,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>
-        <Providers>{children}</Providers>
+    <html lang="en" className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>
+      <body>
+        <Providers>
+          <TopNavBar />
+          <div className="min-h-screen pt-12 mx-auto max-w-7xl">{children}</div>
+        </Providers>
       </body>
     </html>
   );
