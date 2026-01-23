@@ -37,6 +37,14 @@ export default function KeyboardShortcuts() {
           <span>End cycle</span>
           <span className="font-mono text-ink">E</span>
         </div>
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2">
+          <span>Shot type: shooting</span>
+          <span className="font-mono text-ink">S</span>
+        </div>
+        <div className="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2">
+          <span>Shot type: feeding</span>
+          <span className="font-mono text-ink">F</span>
+        </div>
       </div>
     </div>
   );

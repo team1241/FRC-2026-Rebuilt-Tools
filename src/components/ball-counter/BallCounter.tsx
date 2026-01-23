@@ -12,7 +12,11 @@ import Hero from "@/components/Hero";
 import StatsPanel from "@/components/ball-counter/components/StatsPanel";
 import VideoPanel from "@/components/ball-counter/components/VideoPanel";
 import { DEFAULT_FPS } from "@/constants";
-import type { Cycle, ShotMark } from "@/components/ball-counter/types";
+import type {
+  Cycle,
+  ShotMark,
+  ShotType,
+} from "@/components/ball-counter/types";
 import { parseYouTubeId } from "@/lib/youtube";
 
 type SourceType = "html5" | "youtube" | null;
@@ -57,19 +61,48 @@ export default function BallCounterApp() {
   const [cycles, setCycles] = useState<Cycle[]>([]);
   const [activeCycleStart, setActiveCycleStart] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [shotType, setShotType] = useState<ShotType>("shooting");
+
+  const cycleTagColors = useMemo(
+    () => [
+      "border-sky-200 bg-sky-100 text-sky-700",
+      "border-emerald-200 bg-emerald-100 text-emerald-700",
+      "border-amber-200 bg-amber-100 text-amber-700",
+      "border-rose-200 bg-rose-100 text-rose-700",
+      "border-violet-200 bg-violet-100 text-violet-700",
+      "border-teal-200 bg-teal-100 text-teal-700",
+    ],
+    [],
+  );
+
+  const pickCycleTagColor = useCallback(
+    (usedColors: string[]) => {
+      const available = cycleTagColors.filter(
+        (color) => !usedColors.includes(color),
+      );
+      const palette = available.length ? available : cycleTagColors;
+      return palette[Math.floor(Math.random() * palette.length)];
+    },
+    [cycleTagColors],
+  );
 
   const averageBps = useMemo(() => {
     if (!cycles.length) return 0;
-    const totals = cycles.map((cycle) => {
-      const duration = cycle.endTime - cycle.startTime;
-      if (duration <= 0) return 0;
-      const markCount = marks.filter(
-        (mark) => mark.time >= cycle.startTime && mark.time <= cycle.endTime,
-      ).length;
-      return markCount / duration;
-    });
-    const sum = totals.reduce((acc, value) => acc + value, 0);
-    return sum / totals.length;
+    const { totalDuration, totalMarks } = cycles.reduce(
+      (acc, cycle) => {
+        const duration = Math.max(0, cycle.endTime - cycle.startTime);
+        if (duration <= 0) return acc;
+        const markCount = marks.filter(
+          (mark) => mark.time >= cycle.startTime && mark.time <= cycle.endTime,
+        ).length;
+        acc.totalDuration += duration;
+        acc.totalMarks += markCount;
+        return acc;
+      },
+      { totalDuration: 0, totalMarks: 0 },
+    );
+    if (!totalDuration) return 0;
+    return totalMarks / totalDuration;
   }, [cycles, marks]);
 
   const isYouTube = sourceType === "youtube";
@@ -211,6 +244,7 @@ export default function BallCounterApp() {
         {
           id: crypto.randomUUID(),
           time: youtubePlayerRef.current.getCurrentTime(),
+          shotType,
         },
       ]);
       return;
@@ -219,9 +253,9 @@ export default function BallCounterApp() {
     if (!video) return;
     setMarks((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), time: video.currentTime },
+      { id: crypto.randomUUID(), time: video.currentTime, shotType },
     ]);
-  }, [isYouTube]);
+  }, [isYouTube, shotType]);
 
   const undoLastMark = () => {
     setMarks((prev) => prev.slice(0, -1));
@@ -239,16 +273,21 @@ export default function BallCounterApp() {
     const now = getCurrentTime();
     if (now === null) return;
     const endTime = Math.max(now, activeCycleStart);
-    setCycles((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        startTime: activeCycleStart,
-        endTime,
-      },
-    ]);
+    setCycles((prev) => {
+      const tagColor = pickCycleTagColor(prev.map((cycle) => cycle.tagColor));
+      return [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          startTime: activeCycleStart,
+          endTime,
+          shotType,
+          tagColor,
+        },
+      ];
+    });
     setActiveCycleStart(null);
-  }, [activeCycleStart, getCurrentTime]);
+  }, [activeCycleStart, getCurrentTime, pickCycleTagColor, shotType]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -272,6 +311,14 @@ export default function BallCounterApp() {
       }
       if (event.key?.toLowerCase() === "e" || event.code === "KeyE") {
         endCycle();
+        return;
+      }
+      if (event.key?.toLowerCase() === "s" || event.code === "KeyS") {
+        setShotType("shooting");
+        return;
+      }
+      if (event.key?.toLowerCase() === "f" || event.code === "KeyF") {
+        setShotType("feeding");
         return;
       }
       if (isMarkShotKey(event)) {
@@ -358,6 +405,16 @@ export default function BallCounterApp() {
       endCycle();
       return;
     }
+    if (event.key?.toLowerCase() === "s" || event.code === "KeyS") {
+      event.preventDefault();
+      setShotType("shooting");
+      return;
+    }
+    if (event.key?.toLowerCase() === "f" || event.code === "KeyF") {
+      event.preventDefault();
+      setShotType("feeding");
+      return;
+    }
     if (isMarkShotKey(event)) {
       event.preventDefault();
       markShot();
@@ -416,6 +473,8 @@ export default function BallCounterApp() {
             cycles={cycles}
             activeCycleStart={activeCycleStart}
             videoUrl={videoUrl}
+            shotType={shotType}
+            onShotTypeChange={setShotType}
             onClearMarks={handleClearMarks}
             onRemoveMark={removeMark}
             onStartCycle={startCycle}

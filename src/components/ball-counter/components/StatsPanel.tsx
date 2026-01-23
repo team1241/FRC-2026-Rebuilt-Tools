@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import type { Cycle, ShotMark } from "@/components/ball-counter/types";
+import type {
+  Cycle,
+  ShotMark,
+  ShotType,
+} from "@/components/ball-counter/types";
 import ShotTimeline from "./ShotTimeline";
 import { formatTime } from "@/lib/time";
 import SaveMetadataModal from "./SaveMetadataModal";
@@ -11,6 +15,8 @@ type StatsPanelProps = {
   cycles: Cycle[];
   activeCycleStart: number | null;
   videoUrl: string;
+  shotType: ShotType;
+  onShotTypeChange: (shotType: ShotType) => void;
   onClearMarks: () => void;
   onRemoveMark: (id: string) => void;
   onStartCycle: () => void;
@@ -24,6 +30,8 @@ export default function StatsPanel({
   cycles,
   activeCycleStart,
   videoUrl,
+  shotType,
+  onShotTypeChange,
   onClearMarks,
   onRemoveMark,
   onStartCycle,
@@ -90,11 +98,53 @@ export default function StatsPanel({
       </div>
 
       <div className="rounded-2xl border border-border-subtle bg-surface-muted p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-base font-semibold text-ink">Shot type</h3>
+            <p className="text-sm text-ink-muted">
+              Track whether marks are for shooting or feeding.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {(["shooting", "feeding"] as const).map((type) => {
+              const isActive = shotType === type;
+              const colorClasses =
+                type === "shooting"
+                  ? "border-emerald-200 bg-emerald-100 text-emerald-700"
+                  : "border-orange-200 bg-orange-100 text-orange-700";
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => onShotTypeChange(type)}
+                  className={`flex items-center gap-3 rounded-2xl border px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                    isActive
+                      ? colorClasses
+                      : "border-border bg-surface text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  <span
+                    className={`flex h-4 w-4 items-center justify-center rounded-sm border ${
+                      isActive ? colorClasses : "border-border bg-surface"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {isActive ? (
+                      <span className="h-2 w-2 rounded-xs bg-current" />
+                    ) : null}
+                  </span>
+                  {type}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border-subtle bg-surface-muted p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-ink">
-              Cycle counter
-            </h3>
+            <h3 className="text-base font-semibold text-ink">Cycle counter</h3>
             <p className="text-sm text-ink-muted">
               Group shots into cycles to measure pace.
             </p>
@@ -119,11 +169,9 @@ export default function StatsPanel({
           </div>
         </div>
         {activeCycleStart === null ? (
-          <p className="mt-3 text-sm text-ink-muted">
-            No active cycle.
-          </p>
+          <p className="mt-3 text-sm text-ink-muted">No active cycle.</p>
         ) : (
-          <div className="mt-3 flex flex-col gap-1 rounded-2xl border border-success-border bg-gradient-to-r from-success-soft to-success-mist px-4 py-3 text-sm">
+          <div className="mt-3 flex flex-col gap-1 rounded-2xl border border-success-border bg-linear-to-r from-success-soft to-success-mist px-4 py-3 text-sm">
             <span className="rounded-full py-1 text-sm font-semibold uppercase tracking-[0.2em] text-ink">
               Active cycle
             </span>
@@ -158,13 +206,22 @@ export default function StatsPanel({
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-border bg-surface-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-ink">
+                    <span className="rounded-full border border-sky-200 bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
                       {bps.toFixed(2)} bps
+                    </span>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
+                        cycle.shotType === "shooting"
+                          ? "border-emerald-200 bg-emerald-100 text-emerald-700"
+                          : "border-orange-200 bg-orange-100 text-orange-700"
+                      }`}
+                    >
+                      {cycle.shotType}
                     </span>
                     <button
                       type="button"
                       onClick={() => setCycleToDelete(cycle)}
-                      className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
+                      className="cursor-pointer rounded-full border border-danger/40 bg-danger/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-danger transition hover:border-danger hover:bg-danger/20"
                     >
                       Delete
                     </button>
@@ -226,9 +283,7 @@ export default function StatsPanel({
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
-              <h4 className="text-lg font-semibold text-ink">
-                Delete cycle?
-              </h4>
+              <h4 className="text-lg font-semibold text-ink">Delete cycle?</h4>
               <button
                 type="button"
                 onClick={() => setCycleToDelete(null)}
@@ -262,7 +317,7 @@ export default function StatsPanel({
                   onRemoveCycle(cycleToDelete.id);
                   setCycleToDelete(null);
                 }}
-                className="rounded-full bg-gradient-to-br from-accent-strong to-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="rounded-full bg-linear-to-br from-accent-strong to-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 Delete cycle
               </button>
