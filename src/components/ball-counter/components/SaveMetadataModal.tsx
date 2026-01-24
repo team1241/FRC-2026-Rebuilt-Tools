@@ -45,8 +45,8 @@ export default function SaveMetadataModal({
       try {
         const cyclePayload: Cycle[] = cycles.map((cycle, index) => ({
           cycleNumber: index + 1,
-          startTimestamp: cycle.startTimestamp.toString(),
-          endTimestamp: cycle.endTimestamp.toString(),
+          startTimestamp: cycle.startTimestamp,
+          endTimestamp: cycle.endTimestamp,
           numberOfBalls: cycle.numberOfBalls,
           cycleType: cycle.shotType,
         }));

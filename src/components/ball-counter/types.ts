@@ -8,8 +8,8 @@ export type ShotType = "shooting" | "feeding";
 
 export type Cycle = {
   cycleNumber: number;
-  startTimestamp: string;
-  endTimestamp: string;
+  startTimestamp: number;
+  endTimestamp: number;
   numberOfBalls: number;
   cycleType: ShotType;
 };

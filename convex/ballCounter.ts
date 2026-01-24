@@ -18,8 +18,8 @@ export const saveData = mutation({
     cycles: v.array(
       v.object({
         cycleNumber: v.number(),
-        startTimestamp: v.string(),
-        endTimestamp: v.string(),
+        startTimestamp: v.number(),
+        endTimestamp: v.number(),
         numberOfBalls: v.number(),
         cycleType: v.union(v.literal('feeding'), v.literal('shooting')),
       })

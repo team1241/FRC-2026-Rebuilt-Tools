@@ -15,8 +15,8 @@ export default defineSchema({
   cycles: defineTable({
     metadataId: v.id("metadata"),
     cycleNumber: v.number(),
-    startTimestamp: v.string(),
-    endTimestamp: v.string(),
+    startTimestamp: v.number(),
+    endTimestamp: v.number(),
     numberOfBalls: v.number(),
     cycleType: v.union(v.literal('feeding'), v.literal('shooting')),
     createdAt: v.string(),
