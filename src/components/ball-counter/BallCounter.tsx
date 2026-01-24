@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Hero from "@/components/common/Hero";
 import StatsPanel from "@/components/ball-counter/components/StatsPanel";
-import VideoPanel from "@/components/ball-counter/components/VideoPanel";
+import VideoPanel from "@/components/common/VideoPanel";
 import useGlobalShortcuts from "@/components/ball-counter/hooks/useGlobalShortcuts";
 import usePlaybackControls from "@/components/ball-counter/hooks/usePlaybackControls";
 import useShotTracking from "@/components/ball-counter/hooks/useShotTracking";

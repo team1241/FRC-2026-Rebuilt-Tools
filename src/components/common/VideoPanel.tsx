@@ -3,8 +3,8 @@ import {
   type RefObject,
 } from "react";
 import KeyboardShortcuts from "./KeyboardShortcuts";
-import VideoSourceInputs from "./VideoSourceInputs";
-import VideoSourceToggle from "./VideoSourceToggle";
+import VideoSourceInputs from "@/components/ball-counter/components/VideoSourceInputs";
+import VideoSourceToggle from "@/components/ball-counter/components/VideoSourceToggle";
 
 type VideoPanelProps = {
   isHtml5: boolean;
