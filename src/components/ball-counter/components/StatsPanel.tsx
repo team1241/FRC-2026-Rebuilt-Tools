@@ -239,7 +239,7 @@ export default function StatsPanel({
 
       <ShotTimeline marks={marks} cycles={cycles} onRemoveMark={onRemoveMark} />
       {isClearConfirmOpen ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <h4 className="text-lg font-semibold text-ink">
@@ -280,7 +280,7 @@ export default function StatsPanel({
         </div>
       ) : null}
       {cycleToDelete ? (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-md rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <h4 className="text-lg font-semibold text-ink">Delete cycle?</h4>

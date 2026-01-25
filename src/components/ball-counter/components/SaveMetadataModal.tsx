@@ -33,6 +33,7 @@ export default function SaveMetadataModal({
 
   const form = useForm<MetadataFormValues>({
     defaultValues: {
+      userName: "",
       eventCode: "",
       matchNumber: "",
       teamNumber: "",
@@ -52,6 +53,7 @@ export default function SaveMetadataModal({
         }));
         await saveBallCountingData({
           metadata: {
+            userName: value.userName,
             eventCode: value.eventCode,
             matchNumber: value.matchNumber,
             teamNumber: Number(value.teamNumber),
@@ -94,7 +96,7 @@ export default function SaveMetadataModal({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 px-4"
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -129,6 +131,32 @@ export default function SaveMetadataModal({
             void form.handleSubmit();
           }}
         >
+          <form.Field name="userName">
+            {(field) => {
+              const fieldError = field.state.meta.isTouched
+                ? field.state.meta.errors?.[0]
+                : undefined;
+              return (
+                <label className="block text-sm font-semibold text-ink">
+                  Your name
+                  <input
+                    type="text"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="ex: Jordan"
+                    className={inputClassName}
+                  />
+                  {fieldError ? (
+                    <span className="mt-2 block text-xs text-danger">
+                      {fieldError}
+                    </span>
+                  ) : null}
+                </label>
+              );
+            }}
+          </form.Field>
+
           <form.Field name="eventCode">
             {(field) => {
               const fieldError = field.state.meta.isTouched

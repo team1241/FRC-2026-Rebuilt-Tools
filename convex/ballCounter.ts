@@ -9,6 +9,7 @@ import { getFormattedTimestamp } from './utils';
 export const saveData = mutation({
   args: {
     metadata: v.object({
+      userName: v.string(),
       eventCode: v.string(),
       matchNumber: v.string(),
       teamNumber: v.number(),

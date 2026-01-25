@@ -4,7 +4,7 @@ import { api } from "./_generated/api"
 import { getFormattedTimestamp } from "./utils";
 import { Doc } from "./_generated/dataModel";
 
-export type CreateMetadataPayload = Pick<Doc<"metadata">, "eventCode" | "matchNumber" | "teamNumber" | "videoUrl" | "userId">
+export type CreateMetadataPayload = Pick<Doc<"metadata">, "userName" | "eventCode" | "matchNumber" | "teamNumber" | "videoUrl" | "userId">
 
 export const writeMetadata = async (ctx: MutationCtx, metadata: CreateMetadataPayload, timestamp?: string) => {
   const _timestamp = timestamp ?? getFormattedTimestamp()
@@ -13,6 +13,7 @@ export const writeMetadata = async (ctx: MutationCtx, metadata: CreateMetadataPa
 
 export const createMetadata = mutation({
   args: {
+    userName: v.string(),
     eventCode: v.string(),
     matchNumber: v.string(),
     teamNumber: v.number(),

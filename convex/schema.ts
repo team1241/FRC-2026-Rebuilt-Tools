@@ -4,6 +4,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   metadata: defineTable({
+    userName: v.optional(v.string()),
     eventCode: v.string(),
     matchNumber: v.string(),
     teamNumber: v.number(),
