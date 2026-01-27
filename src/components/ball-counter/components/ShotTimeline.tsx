@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { CycleUi, ShotMark } from "@/components/ball-counter/types";
 import { formatTime } from "@/lib/time";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type ShotTimelineProps = {
   marks: ShotMark[];
@@ -32,11 +34,11 @@ export default function ShotTimeline({
   return (
     <div
       ref={listRef}
-      className="rounded-2xl border border-border bg-surface p-4 grow overflow-scroll max-h-[550px]"
+      className="rounded-2xl border border-border bg-card p-4 grow overflow-scroll max-h-[550px]"
     >
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-lg font-semibold text-ink">Shot timeline</h3>
-        <span className="text-xs uppercase tracking-[0.2em] text-ink-muted">
+        <h3 className="text-lg font-semibold text-foreground">Shot timeline</h3>
+        <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
           {marks.length} entries
         </span>
       </div>
@@ -47,14 +49,14 @@ export default function ShotTimeline({
             return (
               <li
                 key={mark.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border-soft bg-surface-muted px-4 py-3 text-sm"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-muted px-4 py-3 text-sm"
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-medium text-ink">
+                  <span className="font-medium text-foreground">
                     #{String(index + 1).padStart(2, "0")} ·{" "}
                     {formatTime(mark.time)}
                   </span>
-                  <span
+                  <Badge
                     className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] ${
                       mark.shotType === "shooting"
                         ? "border-emerald-200 bg-emerald-100 text-emerald-700"
@@ -62,32 +64,32 @@ export default function ShotTimeline({
                     }`}
                   >
                     {mark.shotType}
-                  </span>
+                  </Badge>
                   {cycleInfo ? (
-                    <span
+                    <Badge
                       className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] ${cycleInfo.cycle.tagColor}`}
                     >
                       Cycle {cycleInfo.index}
-                    </span>
+                    </Badge>
                   ) : (
-                    <span className="rounded-full border border-dashed border-border bg-surface px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
+                    <Badge className="rounded-full border border-dashed border-border bg-background px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                       No cycle
-                    </span>
+                    </Badge>
                   )}
                 </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => onRemoveMark(mark.id)}
-                  className="cursor-pointer rounded-full border border-danger/40 bg-danger/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-danger transition hover:border-danger hover:bg-danger/20"
+                  variant="destructive"
                 >
                   Remove
-                </button>
+                </Button>
               </li>
             );
           })}
         </ul>
       ) : (
-        <p className="mt-3 text-sm text-ink-muted">
+        <p className="mt-3 text-sm text-muted-foreground">
           Marks appear here with timestamped shot data.
         </p>
       )}

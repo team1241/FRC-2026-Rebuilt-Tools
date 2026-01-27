@@ -14,10 +14,10 @@ export default function NavLinks() {
         return (
           <Link
             key={`nav-link-${link.label}`}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium transition hover:bg-surface-soft hover:text-ink ${
+            className={`rounded-full px-3 py-1.5 text-sm font-medium transition hover:bg-muted hover:text-foreground ${
               isActive
-                ? "font-semibold text-ink underline decoration-accent decoration-2 underline-offset-8"
-                : "text-ink-muted"
+                ? "font-semibold text-foreground underline decoration-primary decoration-2 underline-offset-8"
+                : "text-muted-foreground"
             }`}
             href={{ pathname: link.href }}
             aria-current={isActive ? "page" : undefined}

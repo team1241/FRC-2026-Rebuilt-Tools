@@ -11,7 +11,7 @@ const convex =
 export default function Providers({ children }: { children: ReactNode }) {
   if (!convex) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-8 text-center text-sm text-(--color-ink-muted)">
+      <div className="flex min-h-screen items-center justify-center p-8 text-center text-sm text-muted-foreground">
         Missing `NEXT_PUBLIC_CONVEX_URL` env variable.
       </div>
     );

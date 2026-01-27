@@ -40,13 +40,15 @@ export default function VideoPanel({
   youtubeContainerRef,
 }: VideoPanelProps) {
   return (
-    <section className="flex flex-col gap-5 rounded-[28px] border border-border bg-surface/90 p-6">
-      <div className="rounded-2xl bg-surface">
+    <section className="flex flex-col gap-5 rounded-[28px] border border-border bg-card p-6">
+      <div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <label className="text-xl font-semibold text-ink">Video Player</label>
+          <label className="text-xl font-semibold text-foreground">
+            Video Player
+          </label>
           <VideoSourceToggle value={selectedSource} onChange={onSourceChange} />
         </div>
-        <div className="mt-3 flex flex-col gap-3">
+        <div className="mt-4 flex flex-col gap-3">
           <VideoSourceInputs
             key={selectedSource}
             selectedSource={selectedSource}
@@ -58,11 +60,11 @@ export default function VideoPanel({
           />
         </div>
         {error ? (
-          <p className="mt-3 text-sm font-medium text-danger">{error}</p>
+          <p className="mt-3 text-sm font-medium text-destructive">{error}</p>
         ) : null}
       </div>
 
-      <div className="relative aspect-video overflow-hidden rounded-2xl bg-video-bg">
+      <div className="relative aspect-video overflow-hidden rounded-2xl bg-foreground">
         {isHtml5 && loadedUrl ? (
           <video
             ref={videoRef}
@@ -77,7 +79,7 @@ export default function VideoPanel({
         ) : isYouTube ? (
           <div ref={youtubeContainerRef} className="h-full w-full" />
         ) : (
-          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-video-text">
+          <div className="flex h-full items-center justify-center px-6 text-center text-sm text-background">
             Load a clip to start stepping through frames.
           </div>
         )}

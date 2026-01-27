@@ -6,6 +6,9 @@ import { useMutation } from "convex/react";
 import { X } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   MetadataFormValues,
   metadataSchema,
@@ -18,9 +21,6 @@ type SaveMetadataModalProps = {
   onClose: () => void;
   videoUrl: string;
 };
-
-const inputClassName =
-  "mt-2 w-full rounded-2xl border border-border bg-surface-soft px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none";
 
 export default function SaveMetadataModal({
   isOpen,
@@ -103,24 +103,26 @@ export default function SaveMetadataModal({
         }
       }}
     >
-      <div className="w-full max-w-lg rounded-3xl border border-border-subtle bg-surface p-6 shadow-xl">
+      <div className="w-full max-w-lg rounded-3xl border border-border bg-background p-6 shadow-xl">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h4 className="text-lg font-semibold text-ink">
+            <h4 className="text-lg font-semibold text-foreground">
               Save match metadata
             </h4>
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-1 text-sm text-muted-foreground">
               Capture event, match, and team details alongside this clip.
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-transparent p-2 text-ink-muted transition hover:border-border hover:text-ink"
+            variant="ghost"
+            size="icon"
+            className="rounded-full border border-transparent text-muted-foreground transition hover:border-border hover:text-foreground"
             aria-label="Close"
           >
             <X className="h-4 w-4" aria-hidden="true" />
-          </button>
+          </Button>
         </div>
 
         <form
@@ -136,23 +138,29 @@ export default function SaveMetadataModal({
               const fieldError = field.state.meta.isTouched
                 ? field.state.meta.errors?.[0]
                 : undefined;
+              const inputId = `${field.name}-input`;
               return (
-                <label className="block text-sm font-semibold text-ink">
-                  Your name
-                  <input
+                <div className="space-y-2">
+                  <Label
+                    htmlFor={inputId}
+                    className="text-sm font-semibold text-foreground"
+                  >
+                    Your name
+                  </Label>
+                  <Input
+                    id={inputId}
                     type="text"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                     placeholder="ex: Jordan"
-                    className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-danger">
+                    <span className="block text-xs text-destructive">
                       {fieldError}
                     </span>
                   ) : null}
-                </label>
+                </div>
               );
             }}
           </form.Field>
@@ -162,23 +170,29 @@ export default function SaveMetadataModal({
               const fieldError = field.state.meta.isTouched
                 ? field.state.meta.errors?.[0]
                 : undefined;
+              const inputId = `${field.name}-input`;
               return (
-                <label className="block text-sm font-semibold text-ink">
-                  Event code
-                  <input
+                <div className="space-y-2">
+                  <Label
+                    htmlFor={inputId}
+                    className="text-sm font-semibold text-foreground"
+                  >
+                    Event code
+                  </Label>
+                  <Input
+                    id={inputId}
                     type="text"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                     placeholder="ex: 2025onbar"
-                    className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-danger">
+                    <span className="block text-xs text-destructive">
                       {fieldError}
                     </span>
                   ) : null}
-                </label>
+                </div>
               );
             }}
           </form.Field>
@@ -188,23 +202,29 @@ export default function SaveMetadataModal({
               const fieldError = field.state.meta.isTouched
                 ? field.state.meta.errors?.[0]
                 : undefined;
+              const inputId = `${field.name}-input`;
               return (
-                <label className="block text-sm font-semibold text-ink">
-                  Match number
-                  <input
+                <div className="space-y-2">
+                  <Label
+                    htmlFor={inputId}
+                    className="text-sm font-semibold text-foreground"
+                  >
+                    Match number
+                  </Label>
+                  <Input
+                    id={inputId}
                     type="text"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                     placeholder="ex: Q42"
-                    className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-danger">
+                    <span className="block text-xs text-destructive">
                       {fieldError}
                     </span>
                   ) : null}
-                </label>
+                </div>
               );
             }}
           </form.Field>
@@ -214,43 +234,41 @@ export default function SaveMetadataModal({
               const fieldError = field.state.meta.isTouched
                 ? field.state.meta.errors?.[0]
                 : undefined;
+              const inputId = `${field.name}-input`;
               return (
-                <label className="block text-sm font-semibold text-ink">
-                  Team number
-                  <input
+                <div className="space-y-2">
+                  <Label
+                    htmlFor={inputId}
+                    className="text-sm font-semibold text-foreground"
+                  >
+                    Team number
+                  </Label>
+                  <Input
+                    id={inputId}
                     type="number"
                     inputMode="numeric"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}
                     placeholder="ex: 4334"
-                    className={inputClassName}
                   />
                   {fieldError ? (
-                    <span className="mt-2 block text-xs text-danger">
+                    <span className="block text-xs text-destructive">
                       {fieldError}
                     </span>
                   ) : null}
-                </label>
+                </div>
               );
             }}
           </form.Field>
 
           <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:border-accent"
-            >
+            <Button type="button" onClick={onClose} variant="ghost">
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-full bg-linear-to-br from-accent-strong to-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70"
-            >
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save data"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="en"
       className={`${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
     >
-      <body>
+      <body className="bg-background">
         <Providers>
           <TopNavBar />
           <div className="min-h-screen pt-12 mx-auto max-w-7xl">{children}</div>
