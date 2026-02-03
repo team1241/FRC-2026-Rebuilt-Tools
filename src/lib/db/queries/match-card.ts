@@ -9,3 +9,11 @@ export async function callMatchCard() {
   }
   return data
 }
+
+export async function getMatchCard(eventId: number, matchNumber: number) {
+  const { data, error } = await supabase.rpc('get_match_card', { event_id: eventId, match_number: matchNumber })
+  if (error) {
+    console.error('Error invoking RPC:', error);
+  }
+  return data
+}

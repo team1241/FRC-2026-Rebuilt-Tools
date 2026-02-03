@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Field,
   FieldContent,
@@ -17,6 +16,14 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import TeamMediaDialog from "@/components/match-card/components/header/TeamMediaDialog";
+import { useActiveSeasonEvents } from "@/hooks/use-active-season-events";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type AllianceTeam = {
   number: number;
@@ -52,22 +59,43 @@ export default function MatchCardHeader({
   redMediaTeams,
   blueMediaTeams,
 }: MatchCardHeaderProps) {
+  const { data, isLoading: isEventsLoading } = useActiveSeasonEvents();
+  const year = data?.year;
   return (
     <>
       <FieldGroup className="flex flex-row gap-4">
-        <Field orientation="vertical" className="w-48">
+        <Field orientation="vertical" className="max-w-fit">
           <FieldLabel className="w-full flex-col items-start gap-2">
-            <FieldTitle>Event ID</FieldTitle>
+            <FieldTitle>Event</FieldTitle>
             <FieldContent>
-              <Input
-                placeholder="2026miket"
-                value={eventId}
-                onChange={(event) => onEventIdChange(event.target.value)}
-              />
+              <Select
+                value={eventId || undefined}
+                onValueChange={(nextValue) => onEventIdChange(nextValue)}
+              >
+                <SelectTrigger
+                  disabled={!data || isEventsLoading}
+                  className="w-100"
+                >
+                  <SelectValue
+                    placeholder={
+                      isEventsLoading
+                        ? "Loading events..."
+                        : "Select an event..."
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {data?.events.map((event) => (
+                    <SelectItem key={event.id} value={event.id.toString()}>
+                      {`${year} - ${event.name}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FieldContent>
           </FieldLabel>
         </Field>
-        <Field orientation="vertical" className="w-36">
+        <Field orientation="vertical" className="w-25">
           <FieldLabel className="w-full flex-col items-start gap-2">
             <FieldTitle>Match Number</FieldTitle>
             <FieldContent>
@@ -76,6 +104,7 @@ export default function MatchCardHeader({
                 type="number"
                 value={matchNumber}
                 onChange={(event) => onMatchNumberChange(event.target.value)}
+                disabled={isEventsLoading}
               />
             </FieldContent>
           </FieldLabel>
