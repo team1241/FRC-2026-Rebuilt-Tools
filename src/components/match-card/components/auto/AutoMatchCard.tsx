@@ -13,8 +13,8 @@ type AllianceTeam = {
 };
 
 type AutoMatchCardProps = {
-  redAlliance: AllianceTeam[];
-  blueAlliance: AllianceTeam[];
+  // redAlliance: AllianceTeam[];
+  // blueAlliance: AllianceTeam[];
 };
 
 const MATCH_CARD_CATEGORIES = [
@@ -36,10 +36,17 @@ const MATCH_CARD_CATEGORIES = [
   "Category 16",
 ];
 
-export default function AutoMatchCard({
-  redAlliance,
-  blueAlliance,
-}: AutoMatchCardProps) {
+export default function AutoMatchCard({}: AutoMatchCardProps) {
+  const redAlliance: AllianceTeam[] = [
+    { name: "Theory6", number: 1241 },
+    { name: "Theory6", number: 1241 },
+    { name: "Theory6", number: 1241 },
+  ];
+  const blueAlliance: AllianceTeam[] = [
+    { name: "Theory6", number: 1241 },
+    { name: "Theory6", number: 1241 },
+    { name: "Theory6", number: 1241 },
+  ];
   return (
     <div className="rounded-lg border border-slate-200 bg-white/70">
       <Table className="text-slate-700">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import {
@@ -29,13 +29,13 @@ import {
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Camera01Icon } from "@hugeicons/core-free-icons";
+import { useTeamImages } from "@/hooks/use-team-images";
 
 type TeamMediaDialogProps = {
   allianceColour: "red" | "blue";
   teams: Array<{
-    teamNumber: number | string;
-    teamName: string;
-    imageUrl: string | null;
+    number: number;
+    name: string;
   }>;
 };
 
@@ -43,9 +43,12 @@ export default function TeamMediaDialog({
   teams,
   allianceColour,
 }: TeamMediaDialogProps) {
-  const displayTeams = useMemo(() => teams.slice(0, 3), [teams]);
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const { data: images } = useTeamImages({
+    teamNumbers: teams.map((team) => team.number),
+  });
 
   useEffect(() => {
     if (!api) return;
@@ -86,64 +89,84 @@ export default function TeamMediaDialog({
           opts={{ loop: true }}
         >
           <CarouselContent className="ml-0">
-            {displayTeams.map((team) => (
-              <CarouselItem className="pl-0" key={team.teamNumber}>
-                <div className="flex h-full flex-col gap-3 rounded-lg border border-border bg-background p-3">
-                  {team.imageUrl ? (
-                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-md border bg-muted">
-                      <Image
-                        src={team.imageUrl}
-                        alt={`Team ${team.teamNumber} ${team.teamName}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 90vw, 840px"
-                      />
-                    </div>
-                  ) : (
-                    <Empty className="min-h-65">
-                      <EmptyHeader>
-                        <EmptyTitle>No image yet</EmptyTitle>
-                        <EmptyDescription>
-                          Add a match photo to see it here.
-                        </EmptyDescription>
-                      </EmptyHeader>
-                    </Empty>
-                  )}
-                </div>
-              </CarouselItem>
-            ))}
+            {teams.map((team) => {
+              const imageUrls = images?.find(
+                (image) => image.teamNumber === team.number,
+              )?.imageUrls;
+              return (
+                <CarouselItem className="pl-0" key={team.number}>
+                  <div className="flex h-full flex-col gap-3 rounded-lg border border-border bg-background">
+                    {imageUrls && imageUrls.length > 0 ? (
+                      <div className="relative aspect-4/3 w-full overflow-hidden rounded-md border bg-muted">
+                        <div
+                          className={cn(
+                            "absolute left-2 top-2 z-10 rounded-md px-2 py-1 text-xs font-semibold text-white shadow",
+                            allianceColour === "red"
+                              ? "bg-red-600/90 ring-1 ring-red-500"
+                              : "bg-blue-600/90 ring-1 ring-blue-500",
+                          )}
+                        >
+                          {team.number} - {team.name}
+                        </div>
+                        <Image
+                          src={imageUrls[0]}
+                          alt={`Team ${team.number} ${team.name}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 90vw, 840px"
+                        />
+                      </div>
+                    ) : (
+                      <Empty className="min-h-65">
+                        <EmptyHeader>
+                          <EmptyTitle>No image yet</EmptyTitle>
+                          <EmptyDescription>
+                            Add a match photo to see it here.
+                          </EmptyDescription>
+                        </EmptyHeader>
+                      </Empty>
+                    )}
+                  </div>
+                </CarouselItem>
+              );
+            })}
           </CarouselContent>
           <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 bg-background/80 shadow ring-1 ring-border" />
           <CarouselNext className="right-3 top-1/2 -translate-y-1/2 bg-background/80 shadow ring-1 ring-border" />
         </Carousel>
         <DialogFooter className="flex flex-row flex-wrap gap-2 sm:justify-center">
-          {displayTeams.map((team, index) => (
-            <button
-              key={`${team.teamNumber}-preview`}
-              type="button"
-              onClick={() => api?.scrollTo(index)}
-              className={cn(
-                "relative h-16 w-24 overflow-hidden rounded-md border transition",
-                selectedIndex === index
-                  ? "ring-2 ring-primary"
-                  : "opacity-70 hover:opacity-100",
-              )}
-            >
-              {team.imageUrl ? (
-                <Image
-                  src={team.imageUrl}
-                  alt={`Preview ${index + 1} for team ${team.teamNumber}`}
-                  fill
-                  className="object-cover"
-                  sizes="96px"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-muted text-[10px] font-semibold text-muted-foreground">
-                  No image
-                </div>
-              )}
-            </button>
-          ))}
+          {teams.map((team, index) => {
+            const imageUrls = images?.find(
+              (image) => image.teamNumber === team.number,
+            )?.imageUrls;
+            return (
+              <button
+                key={`${team.number}-preview`}
+                type="button"
+                onClick={() => api?.scrollTo(index)}
+                className={cn(
+                  "relative h-16 w-24 overflow-hidden rounded-md border transition",
+                  selectedIndex === index
+                    ? "ring-2 ring-primary"
+                    : "opacity-70 hover:opacity-100",
+                )}
+              >
+                {imageUrls && imageUrls.length > 0 ? (
+                  <Image
+                    src={imageUrls[0]}
+                    alt={`Preview ${index + 1} for team ${team.number}`}
+                    fill
+                    className="object-cover"
+                    sizes="96px"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-muted text-[10px] font-semibold text-muted-foreground">
+                    No image
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </DialogFooter>
       </DialogContent>
     </Dialog>

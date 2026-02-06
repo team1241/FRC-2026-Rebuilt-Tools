@@ -53,3 +53,10 @@ export interface EventResponse {
   events: Event[],
   year: number
 }
+
+export interface FieldImage {
+  id: number,
+  seasonId: number,
+  imageUrls: string[],
+  teamNumber: number
+}

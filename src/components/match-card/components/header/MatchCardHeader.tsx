@@ -35,18 +35,6 @@ type MatchCardHeaderProps = {
   matchNumber: string;
   onEventIdChange: (nextValue: string) => void;
   onMatchNumberChange: (nextValue: string) => void;
-  redAlliance: AllianceTeam[];
-  blueAlliance: AllianceTeam[];
-  redMediaTeams: Array<{
-    teamNumber: number | string;
-    teamName: string;
-    imageUrl: string | null;
-  }>;
-  blueMediaTeams: Array<{
-    teamNumber: number | string;
-    teamName: string;
-    imageUrl: string | null;
-  }>;
 };
 
 export default function MatchCardHeader({
@@ -54,13 +42,27 @@ export default function MatchCardHeader({
   matchNumber,
   onEventIdChange,
   onMatchNumberChange,
-  redAlliance,
-  blueAlliance,
-  redMediaTeams,
-  blueMediaTeams,
 }: MatchCardHeaderProps) {
   const { data, isLoading: isEventsLoading } = useActiveSeasonEvents();
   const year = data?.year;
+  const redAlliance: AllianceTeam[] = [
+    { name: "Theory6", number: 1241 },
+    { name: "Theory7", number: 1242 },
+    { name: "Theory8", number: 1243 },
+  ];
+  const blueAlliance: AllianceTeam[] = [
+    { name: "Theory1", number: 1244 },
+    { name: "Theory2", number: 1245 },
+    { name: "Theory3", number: 1246 },
+  ];
+  const redAllianceImages = redAlliance.map((team) => ({
+    ...team,
+    imageUrl: "",
+  }));
+  const blueAllianceImages = blueAlliance.map((team) => ({
+    ...team,
+    imageUrl: "",
+  }));
   return (
     <>
       <FieldGroup className="flex flex-row gap-4">
@@ -115,7 +117,7 @@ export default function MatchCardHeader({
         <div className="rounded-lg border border-red-200 bg-red-50/60 p-3 col-span-5">
           <div className="flex items-center justify-between gap-3 text-lg font-semibold uppercase tracking-wide text-red-600">
             <span>Red Alliance</span>
-            <TeamMediaDialog allianceColour="red" teams={redMediaTeams} />
+            <TeamMediaDialog allianceColour="red" teams={redAllianceImages} />
           </div>
           <Table className="text-slate-700">
             <TableHeader className="text-xs uppercase text-slate-500 text-center">
@@ -148,7 +150,7 @@ export default function MatchCardHeader({
         <div className="rounded-lg border border-blue-200 bg-blue-50/60 p-3 col-span-5">
           <div className="flex items-center justify-between gap-3 text-lg font-semibold uppercase tracking-wide text-blue-600">
             <span>Blue Alliance</span>
-            <TeamMediaDialog allianceColour="blue" teams={blueMediaTeams} />
+            <TeamMediaDialog allianceColour="blue" teams={blueAllianceImages} />
           </div>
           <Table className="text-slate-700">
             <TableHeader className="text-xs uppercase text-slate-500 text-center">

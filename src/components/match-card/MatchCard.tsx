@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { parseAsString, useQueryState } from "nuqs";
 import Hero from "@/components/common/Hero";
 import MatchCardTabs from "@/components/match-card/components/header/MatchCardTabs";
@@ -8,7 +8,6 @@ import AutoMatchCard from "@/components/match-card/components/auto/AutoMatchCard
 import GeneralMatchCard from "@/components/match-card/components/general/GeneralMatchCard";
 import MatchCardHeader from "@/components/match-card/components/header/MatchCardHeader";
 import { Card } from "@/components/ui/card";
-import { generateAllianceTeams } from "@/components/match-card/teams";
 
 export default function MatchCard() {
   const [phase, setPhase] = useState<"auto" | "general">("general");
@@ -20,39 +19,7 @@ export default function MatchCard() {
 
   const eventIdValue = eventId ?? "";
   const matchNumberValue = matchNumber ?? "";
-  const parsedMatchNumber = Number.parseInt(matchNumberValue, 10) || 1;
-
-  const [redAlliance, blueAlliance] = [
-    generateAllianceTeams(
-      eventIdValue.trim() || "event",
-      parsedMatchNumber,
-      "red",
-    ),
-    generateAllianceTeams(
-      eventIdValue.trim() || "event",
-      parsedMatchNumber,
-      "blue",
-    ),
-  ];
-
-  const redMediaTeams = useMemo(
-    () =>
-      redAlliance.map((team) => ({
-        teamNumber: team.number,
-        teamName: team.name,
-        imageUrl: null,
-      })),
-    [redAlliance],
-  );
-  const blueMediaTeams = useMemo(
-    () =>
-      blueAlliance.map((team) => ({
-        teamNumber: team.number,
-        teamName: team.name,
-        imageUrl: null,
-      })),
-    [blueAlliance],
-  );
+  // const parsedMatchNumber = Number.parseInt(matchNumberValue, 10) || 1;
 
   return (
     <div className="flex w-full flex-col gap-4 min-h-screen pb-12 pt-10">
@@ -68,19 +35,8 @@ export default function MatchCard() {
           matchNumber={matchNumberValue}
           onEventIdChange={(nextValue) => setEventId(nextValue || null)}
           onMatchNumberChange={(nextValue) => setMatchNumber(nextValue || null)}
-          redAlliance={redAlliance}
-          blueAlliance={blueAlliance}
-          redMediaTeams={redMediaTeams}
-          blueMediaTeams={blueMediaTeams}
         />
-        {phase === "auto" ? (
-          <AutoMatchCard
-            redAlliance={redAlliance}
-            blueAlliance={blueAlliance}
-          />
-        ) : (
-          <GeneralMatchCard />
-        )}
+        {phase === "auto" ? <AutoMatchCard /> : <GeneralMatchCard />}
       </Card>
     </div>
   );
