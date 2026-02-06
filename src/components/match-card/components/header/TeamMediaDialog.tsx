@@ -107,7 +107,11 @@ export default function TeamMediaDialog({
                         >
                           {team.teamNumber}
                         </div>
-                        <Link href={new URL(imageUrls[0])}>
+                        <Link
+                          href={new URL(imageUrls[0])}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
                           <div className="absolute right-2 top-2 z-10 rounded-md px-2 py-1 text-xs font-semibold text-white shadow flex flex-row gap-2 bg-emerald-600">
                             View full image{" "}
                             <HugeiconsIcon
