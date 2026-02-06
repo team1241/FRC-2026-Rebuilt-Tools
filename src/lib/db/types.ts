@@ -60,3 +60,16 @@ export interface FieldImage {
   imageUrls: string[],
   teamNumber: number
 }
+
+export interface TeamInMatch {
+  colour: string,
+  driverStation: number,
+  teamNumber: number
+}
+
+export interface TeamsInMatchResponse {
+  eventId: number,
+  matchNumber: string,
+  redAlliance: TeamInMatch[],
+  blueAlliance: TeamInMatch[]
+}

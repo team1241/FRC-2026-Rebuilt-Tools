@@ -16,10 +16,8 @@ export default function MatchCard() {
     "matchNumber",
     parseAsString,
   );
-
   const eventIdValue = eventId ?? "";
   const matchNumberValue = matchNumber ?? "";
-  // const parsedMatchNumber = Number.parseInt(matchNumberValue, 10) || 1;
 
   return (
     <div className="flex w-full flex-col gap-4 min-h-screen pb-12 pt-10">

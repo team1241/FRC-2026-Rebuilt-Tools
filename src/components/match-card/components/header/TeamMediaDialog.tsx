@@ -30,13 +30,11 @@ import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Camera01Icon } from "@hugeicons/core-free-icons";
 import { useTeamImages } from "@/hooks/use-team-images";
+import { TeamInMatch } from "@/lib/db/types";
 
 type TeamMediaDialogProps = {
   allianceColour: "red" | "blue";
-  teams: Array<{
-    number: number;
-    name: string;
-  }>;
+  teams: TeamInMatch[];
 };
 
 export default function TeamMediaDialog({
@@ -47,7 +45,7 @@ export default function TeamMediaDialog({
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const { data: images } = useTeamImages({
-    teamNumbers: teams.map((team) => team.number),
+    teamNumbers: teams.map((team) => team.teamNumber),
   });
 
   useEffect(() => {
@@ -91,10 +89,10 @@ export default function TeamMediaDialog({
           <CarouselContent className="ml-0">
             {teams.map((team) => {
               const imageUrls = images?.find(
-                (image) => image.teamNumber === team.number,
+                (image) => image.teamNumber === team.teamNumber,
               )?.imageUrls;
               return (
-                <CarouselItem className="pl-0" key={team.number}>
+                <CarouselItem className="pl-0" key={team.teamNumber}>
                   <div className="flex h-full flex-col gap-3 rounded-lg border border-border bg-background">
                     {imageUrls && imageUrls.length > 0 ? (
                       <div className="relative aspect-4/3 w-full overflow-hidden rounded-md border bg-muted">
@@ -106,11 +104,11 @@ export default function TeamMediaDialog({
                               : "bg-blue-600/90 ring-1 ring-blue-500",
                           )}
                         >
-                          {team.number} - {team.name}
+                          {team.teamNumber}
                         </div>
                         <Image
                           src={imageUrls[0]}
-                          alt={`Team ${team.number} ${team.name}`}
+                          alt={`Image of team ${team.teamNumber}`}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 90vw, 840px"
@@ -137,11 +135,11 @@ export default function TeamMediaDialog({
         <DialogFooter className="flex flex-row flex-wrap gap-2 sm:justify-center">
           {teams.map((team, index) => {
             const imageUrls = images?.find(
-              (image) => image.teamNumber === team.number,
+              (image) => image.teamNumber === team.teamNumber,
             )?.imageUrls;
             return (
               <button
-                key={`${team.number}-preview`}
+                key={`${team.teamNumber}-preview`}
                 type="button"
                 onClick={() => api?.scrollTo(index)}
                 className={cn(
@@ -154,7 +152,7 @@ export default function TeamMediaDialog({
                 {imageUrls && imageUrls.length > 0 ? (
                   <Image
                     src={imageUrls[0]}
-                    alt={`Preview ${index + 1} for team ${team.number}`}
+                    alt={`Preview ${index + 1} for team ${team.teamNumber}`}
                     fill
                     className="object-cover"
                     sizes="96px"

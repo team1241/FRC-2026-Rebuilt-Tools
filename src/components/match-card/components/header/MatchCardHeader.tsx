@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTeamsInMatch } from "@/hooks/use-teams-in-match";
 
 type AllianceTeam = {
   number: number;
@@ -45,24 +46,21 @@ export default function MatchCardHeader({
 }: MatchCardHeaderProps) {
   const { data, isLoading: isEventsLoading } = useActiveSeasonEvents();
   const year = data?.year;
-  const redAlliance: AllianceTeam[] = [
-    { name: "Theory6", number: 1241 },
-    { name: "Theory7", number: 1242 },
-    { name: "Theory8", number: 1243 },
-  ];
-  const blueAlliance: AllianceTeam[] = [
-    { name: "Theory1", number: 1244 },
-    { name: "Theory2", number: 1245 },
-    { name: "Theory3", number: 1246 },
-  ];
-  const redAllianceImages = redAlliance.map((team) => ({
-    ...team,
-    imageUrl: "",
-  }));
-  const blueAllianceImages = blueAlliance.map((team) => ({
-    ...team,
-    imageUrl: "",
-  }));
+
+  const { data: teamsInMatchResponse, isLoading: isTeamsLoading } =
+    useTeamsInMatch({
+      eventId,
+      matchNumber,
+    });
+
+  const redAlliance = teamsInMatchResponse?.redAlliance;
+  const blueAlliance = teamsInMatchResponse?.blueAlliance;
+  const driverStations = [1, 2, 3];
+  const showRedFallback =
+    !isTeamsLoading && (!redAlliance || redAlliance.length === 0);
+  const showBlueFallback =
+    !isTeamsLoading && (!blueAlliance || blueAlliance.length === 0);
+
   return (
     <>
       <FieldGroup className="flex flex-row gap-4">
@@ -117,31 +115,58 @@ export default function MatchCardHeader({
         <div className="rounded-lg border border-red-200 bg-red-50/60 p-3 col-span-5">
           <div className="flex items-center justify-between gap-3 text-lg font-semibold uppercase tracking-wide text-red-600">
             <span>Red Alliance</span>
-            <TeamMediaDialog allianceColour="red" teams={redAllianceImages} />
+            <TeamMediaDialog allianceColour="red" teams={redAlliance ?? []} />
           </div>
           <Table className="text-slate-700">
             <TableHeader className="text-xs uppercase text-slate-500 text-center">
               <TableRow>
-                {redAlliance.map((team, index) => (
-                  <TableHead
-                    key={`red-head-${team.number}`}
-                    className="text-center"
-                  >
-                    Driver Station {index + 1}
-                  </TableHead>
-                ))}
+                {isTeamsLoading || showRedFallback
+                  ? driverStations.map((station) => (
+                      <TableHead
+                        key={`red-head-loading-${station}`}
+                        className="text-center"
+                      >
+                        Driver Station {station}
+                      </TableHead>
+                    ))
+                  : redAlliance?.map((team, index) => (
+                      <TableHead
+                        key={`red-head-${team.teamNumber}`}
+                        className="text-center"
+                      >
+                        Driver Station {index + 1}
+                      </TableHead>
+                    ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
-                {redAlliance.map((team) => (
-                  <TableCell
-                    key={`red-${team.number}`}
-                    className="text-center text-base font-semibold text-slate-900"
-                  >
-                    {team.number}
-                  </TableCell>
-                ))}
+                {isTeamsLoading
+                  ? driverStations.map((station) => (
+                      <TableCell
+                        key={`red-loading-${station}`}
+                        className="text-center"
+                      >
+                        <div className="mx-auto h-5 w-12 rounded bg-slate-200 animate-pulse" />
+                      </TableCell>
+                    ))
+                  : showRedFallback
+                    ? driverStations.map((station) => (
+                        <TableCell
+                          key={`red-empty-${station}`}
+                          className="text-center text-base font-semibold text-slate-500"
+                        >
+                          -
+                        </TableCell>
+                      ))
+                    : redAlliance?.map((team) => (
+                        <TableCell
+                          key={`red-${team.teamNumber}`}
+                          className="text-center text-base font-semibold text-slate-900"
+                        >
+                          {team.teamNumber}
+                        </TableCell>
+                      ))}
               </TableRow>
             </TableBody>
           </Table>
@@ -150,31 +175,58 @@ export default function MatchCardHeader({
         <div className="rounded-lg border border-blue-200 bg-blue-50/60 p-3 col-span-5">
           <div className="flex items-center justify-between gap-3 text-lg font-semibold uppercase tracking-wide text-blue-600">
             <span>Blue Alliance</span>
-            <TeamMediaDialog allianceColour="blue" teams={blueAllianceImages} />
+            <TeamMediaDialog allianceColour="blue" teams={blueAlliance ?? []} />
           </div>
           <Table className="text-slate-700">
             <TableHeader className="text-xs uppercase text-slate-500 text-center">
               <TableRow>
-                {blueAlliance.map((team, index) => (
-                  <TableHead
-                    key={`blue-head-${team.number}`}
-                    className="text-center"
-                  >
-                    Driver Station {index + 1}
-                  </TableHead>
-                ))}
+                {isTeamsLoading || showBlueFallback
+                  ? driverStations.map((station) => (
+                      <TableHead
+                        key={`blue-head-loading-${station}`}
+                        className="text-center"
+                      >
+                        Driver Station {station}
+                      </TableHead>
+                    ))
+                  : blueAlliance?.map((team, index) => (
+                      <TableHead
+                        key={`blue-head-${team.teamNumber}`}
+                        className="text-center"
+                      >
+                        Driver Station {index + 1}
+                      </TableHead>
+                    ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
-                {blueAlliance.map((team) => (
-                  <TableCell
-                    key={`blue-${team.number}`}
-                    className="text-center text-base font-semibold text-slate-900"
-                  >
-                    {team.number}
-                  </TableCell>
-                ))}
+                {isTeamsLoading
+                  ? driverStations.map((station) => (
+                      <TableCell
+                        key={`blue-loading-${station}`}
+                        className="text-center"
+                      >
+                        <div className="mx-auto h-5 w-12 rounded bg-slate-200 animate-pulse" />
+                      </TableCell>
+                    ))
+                  : showBlueFallback
+                    ? driverStations.map((station) => (
+                        <TableCell
+                          key={`blue-empty-${station}`}
+                          className="text-center text-base font-semibold text-slate-500"
+                        >
+                          -
+                        </TableCell>
+                      ))
+                    : blueAlliance?.map((team) => (
+                        <TableCell
+                          key={`blue-${team.teamNumber}`}
+                          className="text-center text-base font-semibold text-slate-900"
+                        >
+                          {team.teamNumber}
+                        </TableCell>
+                      ))}
               </TableRow>
             </TableBody>
           </Table>
