@@ -14,7 +14,7 @@ export const saveData = mutation({
       matchNumber: v.string(),
       teamNumber: v.number(),
       videoUrl: v.string(),
-      userId: v.string(),
+      bps: v.number()
     }),
     cycles: v.array(
       v.object({
@@ -22,6 +22,7 @@ export const saveData = mutation({
         startTimestamp: v.number(),
         endTimestamp: v.number(),
         numberOfBalls: v.number(),
+        bps: v.number(),
         cycleType: v.union(v.literal('feeding'), v.literal('shooting')),
       })
     )

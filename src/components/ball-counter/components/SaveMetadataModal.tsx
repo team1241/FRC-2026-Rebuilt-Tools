@@ -44,13 +44,35 @@ export default function SaveMetadataModal({
     onSubmit: async ({ value }) => {
       const trimmedUrl = videoUrl.trim();
       try {
-        const cyclePayload: Cycle[] = cycles.map((cycle, index) => ({
-          cycleNumber: index + 1,
-          startTimestamp: cycle.startTimestamp,
-          endTimestamp: cycle.endTimestamp,
-          numberOfBalls: cycle.numberOfBalls,
-          cycleType: cycle.shotType,
-        }));
+        const cyclePayload: Cycle[] = cycles.map((cycle, index) => {
+          const duration = Math.max(
+            0,
+            cycle.endTimestamp - cycle.startTimestamp,
+          );
+          const bps = duration > 0 ? cycle.numberOfBalls / duration : 0;
+          return {
+            cycleNumber: index + 1,
+            startTimestamp: cycle.startTimestamp,
+            endTimestamp: cycle.endTimestamp,
+            numberOfBalls: cycle.numberOfBalls,
+            cycleType: cycle.shotType,
+            bps,
+          };
+        });
+        const { totalBalls, totalDuration } = cycles.reduce(
+          (acc, cycle) => {
+            const duration = Math.max(
+              0,
+              cycle.endTimestamp - cycle.startTimestamp,
+            );
+            if (duration <= 0) return acc;
+            acc.totalBalls += cycle.numberOfBalls;
+            acc.totalDuration += duration;
+            return acc;
+          },
+          { totalBalls: 0, totalDuration: 0 },
+        );
+        const overallBps = totalDuration > 0 ? totalBalls / totalDuration : 0;
         await saveBallCountingData({
           metadata: {
             userName: value.userName,
@@ -58,7 +80,7 @@ export default function SaveMetadataModal({
             matchNumber: value.matchNumber,
             teamNumber: Number(value.teamNumber),
             videoUrl: trimmedUrl,
-            userId: "local",
+            bps: overallBps,
           },
           cycles: cyclePayload,
         });

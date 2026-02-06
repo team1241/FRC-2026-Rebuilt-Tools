@@ -11,6 +11,7 @@ export type Cycle = {
   startTimestamp: number;
   endTimestamp: number;
   numberOfBalls: number;
+  bps: number;
   cycleType: ShotType;
 };
 

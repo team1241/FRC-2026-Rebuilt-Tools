@@ -4,7 +4,7 @@ import { getFormattedTimestamp } from "./utils";
 import { Doc } from "./_generated/dataModel";
 import { api } from "./_generated/api";
 
-export type CreateCyclePayload = Pick<Doc<'cycles'>, 'metadataId' | 'cycleNumber' | 'startTimestamp' | 'endTimestamp' | 'numberOfBalls' | 'cycleType'>
+export type CreateCyclePayload = Pick<Doc<'cycles'>, 'metadataId' | 'cycleNumber' | 'startTimestamp' | 'endTimestamp' | 'numberOfBalls' | 'bps' | 'cycleType'>
 
 export const createCycles = mutation({
   args: {
@@ -15,6 +15,7 @@ export const createCycles = mutation({
         startTimestamp: v.number(),
         endTimestamp: v.number(),
         numberOfBalls: v.number(),
+        bps: v.number(),
         cycleType: v.union(v.literal('feeding'), v.literal('shooting')),
       })
     )
