@@ -18,7 +18,7 @@ export const useTeamImages = ({ teamNumbers }: UseTeamImagesForMatchProps) => {
 
       return events
     },
-    enabled: !!teamNumbers,
+    enabled: teamNumbers && teamNumbers?.length > 0,
     retry: false
   })
 }

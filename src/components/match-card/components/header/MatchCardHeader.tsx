@@ -1,4 +1,6 @@
 "use client";
+"use no memo";
+
 import {
   Field,
   FieldContent,
@@ -25,32 +27,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTeamsInMatch } from "@/hooks/use-teams-in-match";
+import { parseAsString, useQueryState } from "nuqs";
+import { useDebounceValue } from "usehooks-ts";
 
-type AllianceTeam = {
-  number: number;
-  name: string;
-};
-
-type MatchCardHeaderProps = {
+interface MatchCardHeaderProps {
   eventId: string;
+  setEventId: (value: string) => void;
   matchNumber: string;
-  onEventIdChange: (nextValue: string) => void;
-  onMatchNumberChange: (nextValue: string) => void;
-};
+  setMatchNumber: (value: string) => void;
+}
 
 export default function MatchCardHeader({
   eventId,
+  setEventId,
   matchNumber,
-  onEventIdChange,
-  onMatchNumberChange,
+  setMatchNumber,
 }: MatchCardHeaderProps) {
+  const [debouncedEventId] = useDebounceValue(eventId, 250);
+  const [debouncedMatchNumber] = useDebounceValue(matchNumber, 250);
   const { data, isLoading: isEventsLoading } = useActiveSeasonEvents();
   const year = data?.year;
 
   const { data: teamsInMatchResponse, isLoading: isTeamsLoading } =
     useTeamsInMatch({
-      eventId,
-      matchNumber,
+      eventId: debouncedEventId,
+      matchNumber: debouncedMatchNumber,
     });
 
   const redAlliance = teamsInMatchResponse?.redAlliance;
@@ -69,8 +70,8 @@ export default function MatchCardHeader({
             <FieldTitle>Event</FieldTitle>
             <FieldContent>
               <Select
-                value={eventId || undefined}
-                onValueChange={(nextValue) => onEventIdChange(nextValue)}
+                value={eventId ?? ""}
+                onValueChange={(nextValue) => setEventId(nextValue)}
               >
                 <SelectTrigger
                   disabled={!data || isEventsLoading}
@@ -102,8 +103,8 @@ export default function MatchCardHeader({
               <Input
                 min={1}
                 type="number"
-                value={matchNumber}
-                onChange={(event) => onMatchNumberChange(event.target.value)}
+                value={matchNumber ?? ""}
+                onChange={(event) => setMatchNumber(event.target.value)}
                 disabled={isEventsLoading}
               />
             </FieldContent>

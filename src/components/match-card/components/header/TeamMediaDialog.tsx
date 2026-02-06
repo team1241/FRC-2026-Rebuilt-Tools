@@ -67,10 +67,12 @@ export default function TeamMediaDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <HugeiconsIcon icon={Camera01Icon} />
-          Photos
-        </Button>
+        {teams.length > 0 && (
+          <Button variant="outline">
+            <HugeiconsIcon icon={Camera01Icon} />
+            Photos
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader className="min-h-fit">

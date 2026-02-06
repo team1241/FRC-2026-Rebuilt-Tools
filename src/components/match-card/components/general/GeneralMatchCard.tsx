@@ -28,15 +28,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-interface GeneralMatchCardProps {
-  eventId: string | null;
-  matchNumber: string | null;
-}
+interface GeneralMatchCardProps {}
 
-export default function GeneralMatchCard({
-  eventId,
-  matchNumber,
-}: GeneralMatchCardProps) {
+export default function GeneralMatchCard({}: GeneralMatchCardProps) {
   const columns = useMatchCardColumns({
     redAlliance: SAMPLE_RED_ALLIANCE,
     blueAlliance: SAMPLE_BLUE_ALLIANCE,
