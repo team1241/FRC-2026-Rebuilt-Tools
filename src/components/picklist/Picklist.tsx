@@ -940,7 +940,7 @@ export default function Picklist() {
     !selectedPicklistId || selectedPicklist !== undefined;
 
   return (
-    <div className="flex min-h-screen flex-col gap-4 pb-12 pt-10">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Hero text="Picklist" />
         <div className="flex flex-wrap items-center gap-2">

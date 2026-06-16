@@ -13,7 +13,7 @@ export default function MatchCard() {
   const [phase, setPhase] = useState<"auto" | "general">("general");
 
   return (
-    <div className="flex w-full flex-col gap-4 min-h-screen pb-12 pt-10">
+    <div className="flex w-full flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Hero text="Match Card" />
         <div className="flex flex-wrap items-center gap-3">

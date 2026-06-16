@@ -133,4 +133,46 @@ export default defineSchema({
     .index("by_owner", ["ownerSubject"])
     .index("by_owner_and_updated", ["ownerSubject", "updatedAt"])
     .index("by_event_code", ["eventCode"]),
+  annotatedVideo: defineTable({
+    sourceKey: v.string(),
+    sourceType: v.union(v.literal("youtube"), v.literal("local")),
+    title: v.string(),
+    youtubeId: v.optional(v.string()),
+    youtubeUrl: v.optional(v.string()),
+    eventKey: v.optional(v.string()),
+    matchKey: v.optional(v.string()),
+    compLevel: v.optional(v.string()),
+    matchNumber: v.optional(v.number()),
+    localLabel: v.optional(v.string()),
+    aiSummary: v.optional(v.string()),
+    createdBySubject: v.string(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  })
+    .index("by_source_key", ["sourceKey"])
+    .index("by_updated", ["updatedAt"])
+    .index("by_creator_and_updated", ["createdBySubject", "updatedAt"]),
+  annotations: defineTable({
+    annotatedVideoId: v.id("annotatedVideo"),
+    authorSubject: v.string(),
+    authorName: v.optional(v.string()),
+    text: v.string(),
+    startTimeSeconds: v.number(),
+    endTimeSeconds: v.optional(v.number()),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  })
+    .index("by_annotated_video", ["annotatedVideoId"])
+    .index("by_annotated_video_and_start", [
+      "annotatedVideoId",
+      "startTimeSeconds",
+    ]),
+  annotationReplies: defineTable({
+    annotationId: v.id("annotations"),
+    authorSubject: v.string(),
+    authorName: v.optional(v.string()),
+    text: v.string(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  }).index("by_annotation", ["annotationId"]),
 })

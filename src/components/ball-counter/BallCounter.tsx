@@ -110,7 +110,7 @@ function BallCounterContent() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-4 min-h-screen pb-12 pt-10">
+    <div className="flex w-full flex-col gap-4">
       <Hero text="Ball Counter" />
       <div className="flex flex-col gap-6">
         <VideoPanel

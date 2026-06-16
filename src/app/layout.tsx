@@ -40,20 +40,22 @@ export default function RootLayout({
     >
       {process.env.NODE_ENV === "development" &&
         process.env.NEXT_PUBLIC_ENABLE_REACT_SCAN === "true" && (
-        <head>
-          <Script
-            src="//unpkg.com/react-scan/dist/auto.global.js"
-            crossOrigin="anonymous"
-            strategy="beforeInteractive"
-          />
-        </head>
-      )}
+          <head>
+            <Script
+              src="//unpkg.com/react-scan/dist/auto.global.js"
+              crossOrigin="anonymous"
+              strategy="beforeInteractive"
+            />
+          </head>
+        )}
       <body className="bg-background">
         <Providers>
           <TooltipProvider>
-            <TopNavBar />
-            <div className="min-h-screen pt-12 mx-auto max-w-7xl px-10">
-              {children}
+            <div className="flex h-dvh flex-col overflow-hidden">
+              <TopNavBar />
+              <main className="mx-auto flex w-full max-w-7xl flex-1 min-h-0 flex-col overflow-y-auto px-10 pb-6 pt-18">
+                {children}
+              </main>
             </div>
           </TooltipProvider>
         </Providers>

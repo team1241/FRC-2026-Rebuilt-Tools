@@ -1,0 +1,120 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { parseYouTubeId } from "@/lib/youtube";
+
+export type SourceType = "html5" | "youtube" | null;
+
+export default function useVideoSource() {
+  const objectUrlRef = useRef<string | null>(null);
+
+  const [videoUrl, setVideoUrl] = useState("");
+  const [loadedUrl, setLoadedUrl] = useState("");
+  const [loadedVideoUrl, setLoadedVideoUrl] = useState("");
+  const [loadedVideoLabel, setLoadedVideoLabel] = useState("");
+  const [selectedSource, setSelectedSource] = useState<"youtube" | "local">(
+    "youtube"
+  );
+  const [sourceType, setSourceType] = useState<SourceType>(null);
+  const [youtubeId, setYouTubeId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
+  const clearObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearObjectUrl();
+    };
+  }, [clearObjectUrl]);
+
+  const loadFromYoutubeId = useCallback(
+    (id: string, label?: string) => {
+      const trimmed = id.trim();
+      if (!trimmed) return false;
+      setError("");
+      clearObjectUrl();
+      setSourceType("youtube");
+      setYouTubeId(trimmed);
+      setLoadedUrl("");
+      const url = `https://www.youtube.com/watch?v=${trimmed}`;
+      setVideoUrl(url);
+      setLoadedVideoUrl(url);
+      setLoadedVideoLabel(label ?? url);
+      setSelectedSource("youtube");
+      return true;
+    },
+    [clearObjectUrl]
+  );
+
+  const loadFromUrl = () => {
+    const trimmed = videoUrl.trim();
+    if (!trimmed) {
+      setError("Add a YouTube video/live URL or upload a local video.");
+      return false;
+    }
+    const youTubeId = parseYouTubeId(trimmed);
+    if (youTubeId) {
+      return loadFromYoutubeId(youTubeId, trimmed);
+    }
+    setError("Only YouTube video or live links are supported.");
+    return false;
+  };
+
+  const loadFromFile = (file: File | null) => {
+    if (!file) return false;
+    clearObjectUrl();
+    const objectUrl = URL.createObjectURL(file);
+    objectUrlRef.current = objectUrl;
+    setError("");
+    setVideoUrl("");
+    setSourceType("html5");
+    setYouTubeId(null);
+    setLoadedUrl(objectUrl);
+    setLoadedVideoUrl(`local:${file.name}`);
+    setLoadedVideoLabel(file.name);
+    setSelectedSource("local");
+    return true;
+  };
+
+  const handleVideoUrlChange = (value: string) => {
+    setVideoUrl(value);
+    setError("");
+  };
+
+  const handleSourceChange = (value: "youtube" | "local") => {
+    setSelectedSource(value);
+    setError("");
+  };
+
+  const clearVideo = useCallback(() => {
+    clearObjectUrl();
+    setVideoUrl("");
+    setLoadedUrl("");
+    setLoadedVideoUrl("");
+    setLoadedVideoLabel("");
+    setSourceType(null);
+    setYouTubeId(null);
+    setError("");
+    setSelectedSource("youtube");
+  }, [clearObjectUrl]);
+
+  return {
+    error,
+    loadedUrl,
+    loadedVideoLabel,
+    loadedVideoUrl,
+    clearVideo,
+    loadFromFile,
+    loadFromUrl,
+    loadFromYoutubeId,
+    handleSourceChange,
+    handleVideoUrlChange,
+    selectedSource,
+    sourceType,
+    videoUrl,
+    youtubeId,
+  };
+}

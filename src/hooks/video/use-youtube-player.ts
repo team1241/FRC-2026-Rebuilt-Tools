@@ -1,0 +1,139 @@
+import { useEffect, useRef } from "react";
+
+export type YouTubePlayer = {
+  destroy: () => void;
+  loadVideoById: (videoId: string) => void;
+  getCurrentTime: () => number;
+  getDuration: () => number;
+  pauseVideo: () => void;
+  seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+};
+
+export function getReadyYouTubePlayer(
+  player: YouTubePlayer | null | undefined
+): YouTubePlayer | null {
+  if (!player || typeof player.getCurrentTime !== "function") {
+    return null;
+  }
+  return player;
+}
+
+type YouTubePlayerConstructor = new (
+  element: HTMLElement,
+  options: {
+    videoId: string;
+    playerVars?: Record<string, string | number>;
+    events?: {
+      onReady?: (event: { target: YouTubePlayer }) => void;
+    };
+  }
+) => YouTubePlayer;
+
+declare global {
+  interface Window {
+    YT?: {
+      Player: YouTubePlayerConstructor;
+    };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+type UseYouTubePlayerOptions = {
+  isYouTube: boolean;
+  youtubeId: string | null;
+};
+
+export default function useYouTubePlayer({
+  isYouTube,
+  youtubeId,
+}: UseYouTubePlayerOptions) {
+  const youtubeContainerRef = useRef<HTMLDivElement | null>(null);
+  const youtubePlayerRef = useRef<YouTubePlayer | null>(null);
+  const lastYoutubeIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isYouTube || !youtubeId) return;
+    let cancelled = false;
+
+    const loadPlayer = () => {
+      if (!youtubeContainerRef.current) return;
+      const Player = window.YT?.Player;
+      if (!Player) return;
+
+      const readyPlayer = getReadyYouTubePlayer(youtubePlayerRef.current);
+      if (
+        readyPlayer &&
+        lastYoutubeIdRef.current &&
+        lastYoutubeIdRef.current !== youtubeId
+      ) {
+        readyPlayer.destroy();
+        youtubePlayerRef.current = null;
+      }
+
+      if (getReadyYouTubePlayer(youtubePlayerRef.current)) {
+        youtubePlayerRef.current!.loadVideoById(youtubeId);
+        lastYoutubeIdRef.current = youtubeId;
+        return;
+      }
+
+      youtubePlayerRef.current = null;
+      lastYoutubeIdRef.current = youtubeId;
+
+      new Player(youtubeContainerRef.current, {
+        videoId: youtubeId,
+        playerVars: {
+          rel: 0,
+          modestbranding: 1,
+        },
+        events: {
+          onReady: (event) => {
+            if (cancelled) return;
+            youtubePlayerRef.current = event.target as YouTubePlayer;
+          },
+        },
+      });
+    };
+
+    const ensureYouTubeApi = () => {
+      if (window.YT?.Player) {
+        loadPlayer();
+        return;
+      }
+      if (document.getElementById("youtube-iframe-api")) {
+        const poll = window.setInterval(() => {
+          if (window.YT?.Player) {
+            window.clearInterval(poll);
+            loadPlayer();
+          }
+        }, 100);
+        return;
+      }
+      const script = document.createElement("script");
+      script.id = "youtube-iframe-api";
+      script.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(script);
+      window.onYouTubeIframeAPIReady = () => {
+        if (!cancelled) {
+          loadPlayer();
+        }
+      };
+    };
+
+    ensureYouTubeApi();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isYouTube, youtubeId]);
+
+  useEffect(() => {
+    if (isYouTube) return;
+    if (youtubePlayerRef.current) {
+      youtubePlayerRef.current.destroy();
+      youtubePlayerRef.current = null;
+    }
+    lastYoutubeIdRef.current = null;
+  }, [isYouTube]);
+
+  return { youtubeContainerRef, youtubePlayerRef };
+}

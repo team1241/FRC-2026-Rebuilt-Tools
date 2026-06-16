@@ -124,6 +124,6 @@
   }
   html,
   body {
-    @apply min-h-screen bg-background text-foreground;
+    @apply h-dvh overflow-hidden bg-background text-foreground;
   }
 }

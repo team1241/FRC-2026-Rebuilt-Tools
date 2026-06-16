@@ -15,4 +15,8 @@ export const NAV_LINKS = [
     label: "Alliance Selection",
     href: "/alliance-selection",
   },
+  {
+    label: "Match Annotator",
+    href: "/match-annotator",
+  },
 ] as const;
