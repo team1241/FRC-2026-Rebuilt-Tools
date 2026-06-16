@@ -1,7 +1,10 @@
-import { redirect } from "next/navigation";
+import AppSpringboard from "@/components/home/AppSpringboard";
+import type { Metadata } from "next";
 
-const BALL_COUNTER_HREF = "/ball-counter" as const;
+export const metadata: Metadata = {
+  title: "Home",
+};
 
 export default function HomePage() {
-  redirect(BALL_COUNTER_HREF as Parameters<typeof redirect>[0]);
+  return <AppSpringboard />;
 }
